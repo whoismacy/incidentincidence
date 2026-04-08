@@ -1,16 +1,17 @@
 package com.whoismacy.android.incidentincidence.view
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,36 +19,80 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 
 @Composable
-fun NewIncidentCard(modifier: Modifier = Modifier) {
-    var displayOutlinedCard by rememberSaveable { mutableStateOf(false) }
-    var cardContent by rememberSaveable { mutableStateOf("") }
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+fun NewIncidentCard(
+    onDismissRequest: () -> Unit,
+    changeDisplayOutlinedCard: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var incidentText by rememberSaveable { mutableStateOf("") }
+    Dialog(
+        onDismissRequest = { onDismissRequest() },
     ) {
-        OutlinedCard {
+        OutlinedCard(
+            modifier = modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.large,
+        ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(24.dp),
             ) {
-                Text("Create new Incident")
-                TextField(
-                    value = cardContent,
-                    onValueChange = { text: String -> cardContent = text },
+                Text(
+                    "Create new Incident",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                OutlinedTextField(
+                    value = incidentText,
+                    onValueChange = { text: String -> incidentText = text },
+                    keyboardOptions =
+                        KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences,
+                            keyboardType = KeyboardType.Text,
+                        ),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = false,
+                    maxLines = 4,
                 )
                 Row(
-                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     ElevatedButton(
+                        modifier = Modifier.padding(end = 8.dp),
                         onClick = {
-                            displayOutlinedCard = false
+                            changeDisplayOutlinedCard(false)
                         },
-                        colors = ButtonDefaults.elevatedButtonColors(),
-                    ) { }
-                    ElevatedButton(onClick = {}) { }
+                        colors =
+                            ButtonDefaults.elevatedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                    ) {
+                        Text("Cancel")
+                    }
+                    ElevatedButton(
+                        enabled = incidentText.isNotEmpty(),
+                        onClick = {
+                            if (incidentText.isNotEmpty()) {
+                                TODO()
+                            }
+                        },
+                        colors =
+                            ButtonDefaults.elevatedButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                    ) {
+                        Text("Create")
+                    }
                 }
             }
         }

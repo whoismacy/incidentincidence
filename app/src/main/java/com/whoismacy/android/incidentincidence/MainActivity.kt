@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -18,8 +17,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
+import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.viewScreens.Home
 import com.whoismacy.android.incidentincidence.viewScreens.Solved
 
@@ -40,17 +39,7 @@ class MainActivity : ComponentActivity() {
             IncidentIncidenceTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {},
-                            modifier = Modifier.padding(bottom = 96.dp),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.baseline_add_24),
-                                contentDescription = "Add",
-                            )
-                        }
-                    },
+                    floatingActionButton = { Fab() },
                 ) { innerPadding ->
                     MainScreen(
                         modifier = Modifier.padding(innerPadding),
