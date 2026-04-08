@@ -11,7 +11,7 @@ import androidx.room.TypeConverters
     exportSchema = false,
     version = 1,
 )
-@TypeConverters(IncidentDatabase::class)
+@TypeConverters(IncidentConverters::class)
 abstract class IncidentDatabase : RoomDatabase() {
     abstract fun incidentsDao(): IncidentDao
 

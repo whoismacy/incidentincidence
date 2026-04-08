@@ -24,7 +24,7 @@ interface IncidentDao {
     @Query("UPDATE `incidences` SET `total_shares` = `total_shares` + 1 WHERE incidentId = :id;")
     suspend fun incrementShare(id: Int)
 
-    @Query("UPDATE `incidences` SET `incidence_resolved` = 1;")
+    @Query("UPDATE `incidences` SET `incidence_resolved` = 1 WHERE incidentId = :id;")
     suspend fun resolveIncident(id: Int)
 
     @Query("UPDATE `incidences` SET `date_resolved` = :date;")
