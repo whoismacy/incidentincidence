@@ -7,12 +7,13 @@ import java.util.Date
 
 @Dao
 interface IncidentDao {
-    @Query("INSERT INTO `incidences` (content, date_added, incidence_resolved, date_resolved ) VALUES(:content, :date, :resolved, :dateResolved);")
+    @Query("INSERT INTO `incidences` (content, date_added, incidence_resolved, date_resolved, total_shares ) VALUES(:content, :date, :resolved, :dateResolved, :totalShares);")
     suspend fun addCrime(
         content: String,
         date: Date = Date(),
         resolved: Boolean = false,
         dateResolved: Date? = null,
+        totalShares: Int = 0,
     )
 
     @Query("SELECT * FROM `incidences` WHERE `incidence_resolved` = 1;")
@@ -29,4 +30,7 @@ interface IncidentDao {
 
     @Query("UPDATE `incidences` SET `date_resolved` = :date;")
     suspend fun resolveDate(date: Date = Date())
+
+    @Query("DELETE FROM `incidences` WHERE `incidentId` = :id")
+    suspend fun deleteIncident(id: Int)
 }

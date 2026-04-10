@@ -37,4 +37,10 @@ class IncidentRepository(
             incidentsDao.resolveDate()
         }
     }
+
+    fun deleteIncident(id: Int) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.deleteIncident(id)
+        }
+    }
 }

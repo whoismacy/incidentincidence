@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.nav.suite.scaffold)
     implementation(libs.hilt.navigation)
     implementation("com.google.dagger:hilt-android:2.59.1")
-    ksp("com.google.dagger:hilt-android-compiler:2.57.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.59.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
