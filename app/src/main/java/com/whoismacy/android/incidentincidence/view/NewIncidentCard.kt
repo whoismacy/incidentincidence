@@ -23,12 +23,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun NewIncidentCard(
     onDismissRequest: () -> Unit,
     changeDisplayOutlinedCard: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: IncidentViewModel = hiltViewModel<IncidentViewModel>(),
 ) {
     var incidentText by rememberSaveable { mutableStateOf("") }
     Dialog(
@@ -82,7 +85,7 @@ fun NewIncidentCard(
                         enabled = incidentText.isNotEmpty(),
                         onClick = {
                             if (incidentText.isNotEmpty()) {
-                                TODO()
+                                viewModel.add(incidentText)
                             }
                         },
                         colors =

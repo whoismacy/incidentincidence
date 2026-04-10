@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.model.IncidentDatabase
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 
+@HiltViewModel
 class IncidentViewModel(
     application: Application,
 ) : ViewModel() {

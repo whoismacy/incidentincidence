@@ -21,6 +21,7 @@ import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.viewScreens.Home
 import com.whoismacy.android.incidentincidence.viewScreens.Solved
+import dagger.hilt.android.AndroidEntryPoint
 
 enum class Destinations(
     val icon: Int,
@@ -31,6 +32,7 @@ enum class Destinations(
     SOLVED(R.drawable.outline_star_shine_24, "Solved Crimes", "An outline of a shining star"),
 }
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
