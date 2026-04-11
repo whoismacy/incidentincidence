@@ -26,6 +26,7 @@ class IncidentViewModel
 
         fun resolveIncident(id: Int) {
             repository.resolveIncident(id)
+            resolveDate()
         }
 
         fun resolveDate() {

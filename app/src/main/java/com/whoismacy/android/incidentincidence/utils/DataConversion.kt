@@ -15,6 +15,6 @@ fun dateToHumanReadable(date: Date): String {
             .toLocalDateTime()
     val formatter =
         DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.MEDIUM)
+            .ofLocalizedDate(FormatStyle.FULL)
     return localDate.format(formatter)
 }

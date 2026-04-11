@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,10 +17,12 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -57,91 +61,57 @@ fun SingleIncidentMbs(
         onDismissRequest = onDismissRequest,
         modifier =
             modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
+                .fillMaxWidth(),
         sheetState = sheetState,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        containerColor = MaterialTheme.colorScheme.surface,
-        scrimColor = MaterialTheme.colorScheme.scrim.copy(0.6f),
     ) {
-        Box(
+        Column(
+            horizontalAlignment = Alignment.Start,
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(horizontal = 24.dp, vertical = 16.dp),
         ) {
-            Card(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+            Text(
+                "Incident #${incident.id}",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                textAlign = TextAlign.Center,
+            )
+            TextDialog("Details", incident.content)
+            TextDialog(
+                "Created at",
+                dateToHumanReadable(incident.dateAdded),
+            )
+            TextDialog(
+                "Shares",
+                if (incident.shared == 0) "None" else incident.shared.toString(),
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(12.dp),
-                ) {
-                    Text(
-                        "Incident ID: #${incident.id}",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                    )
-                    TextDialog("Incident", incident.content)
-                    TextDialog(
-                        "Created at",
-                        dateToHumanReadable(incident.dateAdded),
-                    )
-                    TextDialog(
-                        "Share Count",
-                        if (incident.shared == 0) "You haven't shared this Incident" else incident.shared.toString(),
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            "Status: ",
-                            style =
-                                TextStyle(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                ),
-                        )
-                        if (!incident.resolved) {
-                            Text(
-                                "UNRESOLVED",
-                                style =
-                                    TextStyle(
-                                        color = Color.Red,
-                                        fontStyle = FontStyle.Italic,
-                                        fontWeight = FontWeight.SemiBold,
-                                    ),
-                            )
-                        } else {
-                            Text(
-                                "RESOLVED",
-                                style =
-                                    TextStyle(
-                                        color = Color.Green,
-                                        fontStyle = FontStyle.Italic,
-                                        fontWeight = FontWeight.SemiBold,
-                                    ),
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(20.dp))
-                    ButtonGroup(
-                        incident,
-                        viewModel,
-                        showDeleteDialog = showDeleteDialog,
-                    ) { showDeleteDialog = it }
-                }
+                Text(
+                    text = "Status: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = if (!incident.resolved) "UNRESOLVED" else "RESOLVED",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = if (!incident.resolved) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                )
             }
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(16.dp))
+            ButtonGroup(
+                incident,
+                viewModel,
+                showDeleteDialog = showDeleteDialog,
+            ) { showDeleteDialog = it }
         }
     }
 }
@@ -151,23 +121,18 @@ fun TextDialog(
     label: String,
     content: String,
 ) {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
     ) {
         Text(
-            "$label: ",
-            style =
-                TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-
         Text(
-            content,
-            style =
-                MaterialTheme.typography.bodyMedium,
+            text = content,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -179,6 +144,7 @@ fun ButtonGroup(
     showDeleteDialog: Boolean,
     controlDeleteDialog: (Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -189,15 +155,12 @@ fun ButtonGroup(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             FilledTonalButton(
-                onClick = {
-                    controlDeleteDialog(true)
-                },
+                onClick = { controlDeleteDialog(true) },
                 colors =
                     ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.errorContainer,
                         contentColor = MaterialTheme.colorScheme.onErrorContainer,
                     ),
-                modifier = Modifier.height(48.dp),
             ) {
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -213,13 +176,15 @@ fun ButtonGroup(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             FilledTonalButton(
-                onClick = {},
+                onClick = {
+                    shareIncident(context, incident)
+                    viewModel.incrementShare(incident.id)
+                },
                 colors =
                     ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     ),
-                modifier = Modifier.height(48.dp),
             ) {
                 Icon(
                     modifier = Modifier.size(18.dp),
@@ -230,13 +195,18 @@ fun ButtonGroup(
             Text("Share", style = MaterialTheme.typography.labelMedium)
         }
 
-        Button(
-            onClick = {
-                viewModel.resolveIncident(incident.id)
-            },
-            modifier = Modifier.padding(12.dp),
-        ) {
-            Text("Resolve #${incident.id}")
+        if (!incident.resolved) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Button(
+                    onClick = { viewModel.resolveIncident(incident.id) },
+                ) {
+                    Text("Resolve")
+                }
+                Text("Mark fixed", style = MaterialTheme.typography.labelMedium)
+            }
         }
     }
 
@@ -261,6 +231,7 @@ fun DeleteDialog(
             Button(
                 onClick = {
                     viewModel.deleteIncident(incident.id)
+                    onDismissRequest()
                 },
                 colors =
                     ButtonDefaults.buttonColors(
@@ -268,19 +239,25 @@ fun DeleteDialog(
                         contentColor = MaterialTheme.colorScheme.onError,
                     ),
             ) {
-                Text("Delete #${incident.id}")
+                Text("Delete")
             }
         },
         dismissButton = {
-            Button(onClick = { onDismissRequest() }) {
+            TextButton(onClick = { onDismissRequest() }) {
                 Text("Cancel")
             }
         },
         title = {
-            Text("Deletion of Incident #${incident.id}", style = MaterialTheme.typography.headlineLarge)
+            Text(
+                "Delete Incident",
+                style = MaterialTheme.typography.titleLarge,
+            )
         },
         text = {
-            Text("Are you sure you want to delete this incident?", style = MaterialTheme.typography.labelMedium)
+            Text(
+                "Are you sure you want to delete incident #${incident.id}? This action cannot be undone.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
         },
     )
 }
