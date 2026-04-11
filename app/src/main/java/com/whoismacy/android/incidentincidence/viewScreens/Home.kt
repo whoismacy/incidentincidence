@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.view.SingleIncidentDialog
+import com.whoismacy.android.incidentincidence.view.SingleIncidentMbs
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
@@ -31,20 +31,25 @@ fun Home(
     modifier: Modifier = Modifier,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
-    val crimes = viewModel.unSolvedCrimes.collectAsStateWithLifecycle(emptyList())
-    var displaySingleIncidentDialog by remember { mutableStateOf(false) }
-    val changeDisplayVisibility: (Boolean) -> Unit = { state: Boolean -> displaySingleIncidentDialog = state }
+    val crimes =
+        viewModel
+            .unSolvedCrimes
+            .collectAsStateWithLifecycle(emptyList())
+
+    var selectedIncidentId by remember { mutableStateOf<Int?>(null) }
+
+    val changeDisplayVisibility: (Int?) -> Unit = { id: Int? -> selectedIncidentId = id }
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(crimes.value) {
             IncidentItem(
-                displaySingleIncidentDialog,
-                changeDisplayVisibility,
-                it,
+                isSelected = selectedIncidentId == it.id,
+                changeDisplayVisibility = changeDisplayVisibility,
+                incident = it,
             )
         }
     }
@@ -52,15 +57,15 @@ fun Home(
 
 @Composable
 fun IncidentItem(
-    displayDialog: Boolean,
-    changeDisplayVisibility: (Boolean) -> Unit,
+    isSelected: Boolean,
+    changeDisplayVisibility: (Int?) -> Unit,
     incident: Incident,
     modifier: Modifier = Modifier,
 ) {
-    if (displayDialog) {
-        SingleIncidentDialog(
+    if (isSelected) {
+        SingleIncidentMbs(
             incident,
-            { changeDisplayVisibility(false) },
+            { changeDisplayVisibility(null) },
         )
     }
     OutlinedCard(
@@ -74,7 +79,7 @@ fun IncidentItem(
             modifier
                 .fillMaxWidth(0.9f)
                 .clickable(onClick = {
-                    changeDisplayVisibility(true)
+                    changeDisplayVisibility(incident.id)
                 }),
     ) {
         Box(

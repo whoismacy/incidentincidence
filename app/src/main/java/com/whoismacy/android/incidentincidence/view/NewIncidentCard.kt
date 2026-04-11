@@ -75,8 +75,8 @@ fun NewIncidentCard(
                         },
                         colors =
                             ButtonDefaults.elevatedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.inversePrimary,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryFixedVariant,
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary,
                             ),
                     ) {
                         Text("Cancel")
