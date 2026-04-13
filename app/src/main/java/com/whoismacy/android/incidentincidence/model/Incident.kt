@@ -24,4 +24,6 @@ class Incident {
 
     @ColumnInfo(name = "date_resolved", defaultValue = "")
     var dateResolved: Date? = Date()
+
+    var severity: String = ""
 }

@@ -16,8 +16,11 @@ class IncidentViewModel
         val solvedCrimes: Flow<List<Incident>> = repository.solvedCrimes
         val unSolvedCrimes: Flow<List<Incident>> = repository.unsolvedCrimes
 
-        fun add(content: String) {
-            repository.add(content)
+        fun add(
+            content: String,
+            severity: String,
+        ) {
+            repository.add(content, severity)
         }
 
         fun incrementShare(id: Int) {

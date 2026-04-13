@@ -7,9 +7,10 @@ import java.util.Date
 
 @Dao
 interface IncidentDao {
-    @Query("INSERT INTO `incidences` (content, date_added, incidence_resolved, date_resolved, total_shares ) VALUES(:content, :date, :resolved, :dateResolved, :totalShares);")
+    @Query("INSERT INTO `incidences` (content, date_added, incidence_resolved, date_resolved, total_shares, severity ) VALUES(:content, :date, :resolved, :dateResolved, :totalShares, :severity);")
     suspend fun addCrime(
         content: String,
+        severity: String = "low",
         date: Date = Date(),
         resolved: Boolean = false,
         dateResolved: Date? = null,
