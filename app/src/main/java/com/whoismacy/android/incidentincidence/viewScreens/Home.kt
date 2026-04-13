@@ -16,8 +16,9 @@ fun Home(
             .unSolvedCrimes
             .collectAsStateWithLifecycle(emptyList())
 
-    DisplayList(crimes.value, modifier)
+    DisplayList(
+        crimes.value,
+        "No Incidents found.\n Create new Incidents to see them here",
+        modifier,
+    )
 }
-
-@Composable
-fun Intro() {}

@@ -16,5 +16,10 @@ fun Solved(
             .solvedCrimes
             .collectAsStateWithLifecycle(emptyList())
 
-    DisplayList(solvedCrimes.value, modifier)
+    DisplayList(
+        solvedCrimes.value,
+        "Uh-oh!!\n" +
+            "No solved incidents",
+        modifier,
+    )
 }
