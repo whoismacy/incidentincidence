@@ -11,8 +11,8 @@ class IncidentRepository(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
-    val solvedCrimes: Flow<List<Incident>> = incidentsDao.getAllSolvedCrimes()
-    val unsolvedCrimes: Flow<List<Incident>> = incidentsDao.getAllUnsolvedCrimes()
+
+    val allIncidences: Flow<List<Incident>> = incidentsDao.getAllIncidences()
 
     fun add(
         content: String,
@@ -22,6 +22,10 @@ class IncidentRepository(
             incidentsDao.addCrime(content, severity)
         }
     }
+
+    fun searchIncident(
+        searchContent: String,
+    ): Flow<List<Incident>> = incidentsDao.searchIncident(searchContent)
 
     fun incrementShare(id: Int) {
         coroutineScope.launch(dispatcher) {

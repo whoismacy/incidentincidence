@@ -17,11 +17,11 @@ interface IncidentDao {
         totalShares: Int = 0,
     )
 
-    @Query("SELECT * FROM `incidences` WHERE `incidence_resolved` = 1;")
-    fun getAllSolvedCrimes(): Flow<List<Incident>>
+    @Query("SELECT * FROM `incidences`;")
+    fun getAllIncidences(): Flow<List<Incident>>
 
-    @Query("SELECT * FROM `incidences` WHERE `incidence_resolved` = 0;")
-    fun getAllUnsolvedCrimes(): Flow<List<Incident>>
+    @Query("SELECT * FROM `incidences` WHERE content LIKE '%' || :searchContent || '%'; ")
+    fun searchIncident(searchContent: String): Flow<List<Incident>>
 
     @Query("UPDATE `incidences` SET `total_shares` = `total_shares` + 1 WHERE incidentId = :id;")
     suspend fun incrementShare(id: Int)

@@ -1,11 +1,26 @@
 package com.whoismacy.android.incidentincidence.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.whoismacy.android.incidentincidence.model.Incident
+import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class SnackbarEvent(
+    val message: String,
+    val actionLabel: String? = null,
+    val action: suspend () -> Unit = {},
+)
 
 @HiltViewModel
 class IncidentViewModel
@@ -13,14 +28,53 @@ class IncidentViewModel
     constructor(
         private val repository: IncidentRepository,
     ) : ViewModel() {
-        val solvedCrimes: Flow<List<Incident>> = repository.solvedCrimes
-        val unSolvedCrimes: Flow<List<Incident>> = repository.unsolvedCrimes
+        private val _snackbarEvents = Channel<SnackbarEvent>()
+        val snackbarEvents = _snackbarEvents.receiveAsFlow()
+
+        private val _searchQuery = MutableStateFlow("")
+        val searchQuery = _searchQuery.asStateFlow()
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        val displayIncidences =
+            _searchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) {
+                        repository.allIncidences
+                    } else {
+                        repository.searchIncident(query)
+                    }
+                }.stateIn(
+                    viewModelScope,
+                    SharingStarted.WhileSubscribed(5000),
+                    emptyList(),
+                )
 
         fun add(
             content: String,
             severity: String,
         ) {
-            repository.add(content, severity)
+            viewModelScope.launch {
+                try {
+                    repository.add(content, severity)
+                    _snackbarEvents.send(
+                        SnackbarEvent(
+                            message = "Incident added successfully",
+                            actionLabel = "Undo",
+                            action = {},
+                        ),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent(
+                            message = "Error: ${e.message}",
+                        ),
+                    )
+                }
+            }
+        }
+
+        fun searchIncident(searchString: String) {
+            repository.searchIncident(searchString)
         }
 
         fun incrementShare(id: Int) {
@@ -37,6 +91,25 @@ class IncidentViewModel
         }
 
         fun deleteIncident(id: Int) {
-            repository.deleteIncident(id)
+            viewModelScope.launch {
+                try {
+                    repository.deleteIncident(id)
+                    _snackbarEvents.send(
+                        SnackbarEvent(
+                            message = "Incident deleted",
+                            actionLabel = "Undo",
+                            action = {},
+                        ),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent("Error: ${e.message}"),
+                    )
+                }
+            }
+        }
+
+        fun updateSearchQuery(query: String) {
+            _searchQuery.value = query
         }
     }

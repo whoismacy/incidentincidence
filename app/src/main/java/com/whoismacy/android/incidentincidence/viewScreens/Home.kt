@@ -2,22 +2,15 @@ package com.whoismacy.android.incidentincidence.viewScreens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
+import com.whoismacy.android.incidentincidence.model.Incident
 
 @Composable
 fun Home(
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel(),
+    incidences: List<Incident> = emptyList<Incident>(),
 ) {
-    val crimes =
-        viewModel
-            .unSolvedCrimes
-            .collectAsStateWithLifecycle(emptyList())
-
     DisplayList(
-        crimes.value,
+        incidences.filter { incident -> !incident.resolved },
         "No Incidents found.\n Create new Incidents to see them here",
         modifier,
     )
