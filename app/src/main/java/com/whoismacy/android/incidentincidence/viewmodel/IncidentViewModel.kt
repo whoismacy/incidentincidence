@@ -73,10 +73,6 @@ class IncidentViewModel
             }
         }
 
-        fun searchIncident(searchString: String) {
-            repository.searchIncident(searchString)
-        }
-
         fun incrementShare(id: Int) {
             repository.incrementShare(id)
         }
