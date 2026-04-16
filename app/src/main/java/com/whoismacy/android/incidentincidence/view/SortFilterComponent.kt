@@ -30,11 +30,24 @@ import com.whoismacy.android.incidentincidence.viewmodel.SortValues
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortFilterComponent(
+    onDismissRequest: () -> Unit,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
-    val currentSortValue = viewModel.currentSortValue.collectAsStateWithLifecycle().value
-    val currentFilterSevereValue = viewModel.currentFilterSevereValue.collectAsStateWithLifecycle().value
-    val currentFilterPeriodValue = viewModel.currentFilterPeriodValue.collectAsStateWithLifecycle().value
+    val currentSortValue =
+        viewModel
+            .currentSortValue
+            .collectAsStateWithLifecycle()
+            .value
+    val currentFilterSevereValue =
+        viewModel
+            .currentFilterSevereValue
+            .collectAsStateWithLifecycle()
+            .value
+    val currentFilterPeriodValue =
+        viewModel
+            .currentFilterPeriodValue
+            .collectAsStateWithLifecycle()
+            .value
 
     val changeSortValue: (SortValues) -> Unit = { viewModel.updateCurrentSortValue(it) }
     val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateCurrentFilterSevereValue(it) }
@@ -44,7 +57,7 @@ fun SortFilterComponent(
 
     ModalBottomSheet(
         sheetState = sheetState,
-        onDismissRequest = {},
+        onDismissRequest = { onDismissRequest() },
         modifier =
             Modifier
                 .fillMaxWidth(),
@@ -135,10 +148,4 @@ fun <T : SortFilter> SortFilterButtonGroup(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SortFilterPreview() {
-    SortFilterComponent()
 }

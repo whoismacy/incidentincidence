@@ -40,6 +40,8 @@ class IncidentViewModel
         private val _currentFilterPeriodValue = MutableStateFlow(FilterPeriodValues.TODAY)
         val currentFilterPeriodValue = _currentFilterPeriodValue.asStateFlow()
 
+        val filtersPresent: Boolean = false
+
         @OptIn(ExperimentalCoroutinesApi::class)
         val displayIncidences =
             _searchQuery
