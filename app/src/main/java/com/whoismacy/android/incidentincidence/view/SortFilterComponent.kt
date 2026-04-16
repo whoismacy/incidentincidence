@@ -15,55 +15,30 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-interface SortFilter {
-    val value: String
-}
-
-enum class SortValues(
-    override val value: String,
-) : SortFilter {
-    NEWEST("Newest first"),
-    OLDEST("Oldest first"),
-    SHUFFLE("Shuffle"),
-}
-
-enum class FilterSevereValues(
-    override val value: String,
-) : SortFilter {
-    LOW("Low"),
-    MEDIUM("Medium"),
-    HIGH("High"),
-    SEVERE("Severe"),
-}
-
-enum class FilterPeriodValues(
-    override val value: String,
-) : SortFilter {
-    TODAY("Today"),
-    PWEEK("Past Week"),
-    PMONTH("Past Month"),
-    PYEAR("Past Year"),
-}
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.whoismacy.android.incidentincidence.viewmodel.FilterPeriodValues
+import com.whoismacy.android.incidentincidence.viewmodel.FilterSevereValues
+import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
+import com.whoismacy.android.incidentincidence.viewmodel.SortFilter
+import com.whoismacy.android.incidentincidence.viewmodel.SortValues
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SortFilterComponent() {
-    var currentSortValue by remember { mutableStateOf(SortValues.NEWEST) }
-    var currentFilterSevereValue by remember { mutableStateOf(FilterSevereValues.LOW) }
-    var currentFilterPeriodValue by remember { mutableStateOf(FilterPeriodValues.TODAY) }
+fun SortFilterComponent(
+    viewModel: IncidentViewModel = hiltViewModel(),
+) {
+    val currentSortValue = viewModel.currentSortValue.collectAsStateWithLifecycle().value
+    val currentFilterSevereValue = viewModel.currentFilterSevereValue.collectAsStateWithLifecycle().value
+    val currentFilterPeriodValue = viewModel.currentFilterPeriodValue.collectAsStateWithLifecycle().value
 
-    val changeSortValue: (SortValues) -> Unit = { value -> currentSortValue = value }
-    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { value -> currentFilterSevereValue = value }
-    val changeFilterPeriodValue: (FilterPeriodValues) -> Unit = { value -> currentFilterPeriodValue = value }
+    val changeSortValue: (SortValues) -> Unit = { viewModel.updateCurrentSortValue(it) }
+    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateCurrentFilterSevereValue(it) }
+    val changeFilterPeriodValue: (FilterPeriodValues) -> Unit = { viewModel.updateCurrentFilterPeriodValue(it) }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -136,17 +111,22 @@ fun SortFilterComponent() {
 
 @Composable
 fun <T : SortFilter> SortFilterButtonGroup(
-    items: List<T>,
+    items: List<T>?,
     selectedItem: T,
     changeSelectedItem: (T) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    SingleChoiceSegmentedButtonRow(modifier = modifier) {
-        items.forEachIndexed { index, item ->
+    SingleChoiceSegmentedButtonRow(modifier = modifier.fillMaxWidth()) {
+        items?.forEachIndexed { index, item ->
             SegmentedButton(
                 selected = item == selectedItem,
                 onClick = { changeSelectedItem(item) },
-                label = { Text(item.value) },
+                label = {
+                    Text(
+                        item.value,
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                },
                 shape =
                     SegmentedButtonDefaults.itemShape(
                         index = index,

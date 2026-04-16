@@ -2,7 +2,6 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.query
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +32,13 @@ class IncidentViewModel
 
         private val _searchQuery = MutableStateFlow("")
         val searchQuery = _searchQuery.asStateFlow()
+
+        private val _currentSortValue = MutableStateFlow(SortValues.NEWEST)
+        val currentSortValue = _currentSortValue.asStateFlow()
+        private val _currentFilterSevereValue = MutableStateFlow(FilterSevereValues.LOW)
+        val currentFilterSevereValue = _currentFilterSevereValue.asStateFlow()
+        private val _currentFilterPeriodValue = MutableStateFlow(FilterPeriodValues.TODAY)
+        val currentFilterPeriodValue = _currentFilterPeriodValue.asStateFlow()
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val displayIncidences =
@@ -107,5 +113,17 @@ class IncidentViewModel
 
         fun updateSearchQuery(query: String) {
             _searchQuery.value = query
+        }
+
+        fun updateCurrentSortValue(value: SortValues) {
+            _currentSortValue.value = value
+        }
+
+        fun updateCurrentFilterSevereValue(value: FilterSevereValues) {
+            _currentFilterSevereValue.value = value
+        }
+
+        fun updateCurrentFilterPeriodValue(value: FilterPeriodValues) {
+            _currentFilterPeriodValue.value = value
         }
     }
