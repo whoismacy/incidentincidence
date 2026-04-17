@@ -74,11 +74,15 @@ fun SearchBar(
                             .size(32.dp)
                             .clickable(
                                 onClickLabel = "Filter",
-                                onClick = { changeSortFilterState(true) },
+                                onClick = {
+                                    changeSortFilterState(true)
+                                },
                             ),
                 )
             } else {
-                TextButton(onClick = {}) {
+                TextButton(onClick = {
+                    viewModel.changeFilter()
+                }) {
                     Text(
                         "Clear Filters",
                         style = MaterialTheme.typography.labelSmall,

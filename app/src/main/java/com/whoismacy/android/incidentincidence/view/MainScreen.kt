@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
-    val displayData by viewModel.displayIncidences.collectAsStateWithLifecycle()
+    val displayData by viewModel.displayIncidences.collectAsStateWithLifecycle(emptyList())
     val searchBarState by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     var destinations by rememberSaveable { mutableStateOf(Destinations.HOME) }
