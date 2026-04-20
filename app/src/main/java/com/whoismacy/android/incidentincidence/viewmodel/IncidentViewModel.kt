@@ -86,7 +86,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident added successfully",
-                            actionLabel = "Undo",
                             action = {},
                         ),
                     )
@@ -120,7 +119,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident deleted",
-                            actionLabel = "Undo",
                             action = {},
                         ),
                     )
