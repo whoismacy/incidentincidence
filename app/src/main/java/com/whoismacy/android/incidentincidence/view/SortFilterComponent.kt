@@ -113,6 +113,7 @@ fun SortFilterComponent(
             Spacer(modifier = Modifier.height(48.dp))
             OutlinedButton(
                 onClick = {
+                    viewModel.toggleFilterEnabled(true)
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {

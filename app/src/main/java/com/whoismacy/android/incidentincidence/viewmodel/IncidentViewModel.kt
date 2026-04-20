@@ -47,7 +47,7 @@ class IncidentViewModel
                         repository.allIncidences.map { incidents ->
                             incidents
                                 .filter { incident ->
-                                    incident.severity == state.filterSevere.value
+                                    incident.severity.equals(state.filterSevere.value, ignoreCase = true)
                                 }.filter { incident ->
                                     filterAccordingToDate(incident, state.filtersPeriod)
                                 }.let {
@@ -156,6 +156,14 @@ class IncidentViewModel
             _displayFilterState.update {
                 it.copy(
                     filtersPeriod = value,
+                )
+            }
+        }
+
+        fun toggleFilterEnabled(value: Boolean) {
+            _displayFilterState.update {
+                it.copy(
+                    filtersEnabled = value,
                 )
             }
         }

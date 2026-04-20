@@ -49,7 +49,7 @@ fun filterAccordingToDate(
                     dateAdded,
                     now,
                 )
-            return difference > 0
+            return difference < 1
         }
 
         "Past Month" -> {
@@ -57,7 +57,7 @@ fun filterAccordingToDate(
                 ChronoUnit
                     .MONTHS
                     .between(dateAdded, now)
-            return difference > 0
+            return difference < 1
         }
 
         "Past Year" -> {
@@ -65,7 +65,7 @@ fun filterAccordingToDate(
                 ChronoUnit
                     .YEARS
                     .between(dateAdded, now)
-            return difference > 0
+            return difference < 1
         }
 
         else -> {
