@@ -34,22 +34,22 @@ fun SortFilterComponent(
 ) {
     val currentSortValue =
         viewModel
-            .currentSortValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.sortValue
     val currentFilterSevereValue =
         viewModel
-            .currentFilterSevereValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.filterSevere
     val currentFilterPeriodValue =
         viewModel
-            .currentFilterPeriodValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.filtersPeriod
 
-    val changeSortValue: (SortValues) -> Unit = { viewModel.updateCurrentSortValue(it) }
-    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateCurrentFilterSevereValue(it) }
+    val changeSortValue: (SortValues) -> Unit = { viewModel.updateSortValue(it) }
+    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateFilterSevereValue(it) }
     val changeFilterPeriodValue: (FilterPeriodValues) -> Unit = { viewModel.updateCurrentFilterPeriodValue(it) }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -113,7 +113,6 @@ fun SortFilterComponent(
             Spacer(modifier = Modifier.height(48.dp))
             OutlinedButton(
                 onClick = {
-                    viewModel.changeFilter()
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {

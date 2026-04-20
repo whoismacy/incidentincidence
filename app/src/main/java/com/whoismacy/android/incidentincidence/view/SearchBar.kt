@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
@@ -37,6 +38,11 @@ fun SearchBar(
 ) {
     var showSortFilterModal by remember { mutableStateOf(false) }
     val changeSortFilterState: (Boolean) -> Unit = { showSortFilterModal = it }
+    val showFilter =
+        viewModel
+            .displayFilterState
+            .collectAsStateWithLifecycle()
+            .value.filtersEnabled
 
     Box(
         modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 32.dp),
@@ -65,7 +71,7 @@ fun SearchBar(
                 },
             )
             Spacer(modifier = Modifier.width(8.dp))
-            if (!viewModel.filtersPresent) {
+            if (!showFilter) {
                 Icon(
                     painter = painterResource(R.drawable.sharp_filter_alt_24),
                     contentDescription = "Filter Icon",
@@ -81,7 +87,7 @@ fun SearchBar(
                 )
             } else {
                 TextButton(onClick = {
-                    viewModel.changeFilter()
+                    viewModel.toggleFilters()
                 }) {
                     Text(
                         "Clear Filters",

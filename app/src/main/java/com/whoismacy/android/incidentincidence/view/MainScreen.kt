@@ -27,17 +27,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.viewScreens.Home
 import com.whoismacy.android.incidentincidence.viewScreens.Solved
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 
 @Composable
 fun MainScreen(
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
-    val displayData by viewModel.displayIncidences.collectAsStateWithLifecycle(emptyList())
-    val searchBarState by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val displayData by viewModel
+        .displayIncidences
+        .collectAsStateWithLifecycle(emptyList<Incident>())
+
+    val displayFilterState by viewModel
+        .displayFilterState
+        .collectAsStateWithLifecycle()
 
     var destinations by rememberSaveable { mutableStateOf(Destinations.HOME) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -79,7 +86,7 @@ fun MainScreen(
         content = {
             Scaffold(
                 topBar = {
-                    SearchBar(searchBarState)
+                    SearchBar(displayFilterState.searchQuery)
                 },
                 modifier = Modifier.fillMaxSize().padding(top = 32.dp),
                 floatingActionButton = { Fab() },
