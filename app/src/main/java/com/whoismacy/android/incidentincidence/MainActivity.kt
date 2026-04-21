@@ -1,50 +1,27 @@
 package com.whoismacy.android.incidentincidence
 
-import android.animation.ObjectAnimator
 import android.os.Bundle
-import android.view.View
-import android.view.animation.OvershootInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.core.animation.doOnEnd
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
 import com.whoismacy.android.incidentincidence.view.MainScreen
+import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    val viewModel by viewModels<IncidentViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         installSplashScreen().apply {
-            setOnExitAnimationListener { screen ->
-                val zoomX =
-                    ObjectAnimator.ofFloat(
-                        screen.iconView,
-                        View.SCALE_X,
-                        0.4f,
-                        0.0f,
-                    )
-                zoomX.interpolator = OvershootInterpolator()
-                zoomX.duration = 500L
-                zoomX.doOnEnd { screen.remove() }
-
-                val zoomY =
-                    ObjectAnimator.ofFloat(
-                        screen.iconView,
-                        View.SCALE_Y,
-                        0.4f,
-                        0.0f,
-                    )
-                zoomY.interpolator = OvershootInterpolator()
-                zoomY.duration = 500L
-                zoomY.doOnEnd { screen.remove() }
-
-                zoomX.start()
-                zoomY.start()
+            setKeepOnScreenCondition {
+                !viewModel.isAvailable.value
             }
         }
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             IncidentIncidenceTheme {
