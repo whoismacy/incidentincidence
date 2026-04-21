@@ -40,7 +40,7 @@ fun MainScreen(
 ) {
     val displayData by viewModel
         .displayIncidences
-        .collectAsStateWithLifecycle(emptyList<Incident>())
+        .collectAsStateWithLifecycle(emptyList())
 
     val displayFilterState by viewModel
         .displayFilterState
