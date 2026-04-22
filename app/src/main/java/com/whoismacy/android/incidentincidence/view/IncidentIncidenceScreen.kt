@@ -1,5 +1,6 @@
 package com.whoismacy.android.incidentincidence.view
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -66,10 +68,15 @@ fun IncidentIncidenceScreen(
     val navBackStack by navController.currentBackStackEntryAsState()
 
     val currentDestination = navBackStack?.destination?.route ?: ""
+    val visible = !currentDestination.contains("TrendRoute")
 
     Scaffold(
         topBar = {
-            SearchBar(displayFilterState.searchQuery)
+            AnimatedVisibility(
+                visible = visible,
+            ) {
+                SearchBar(displayFilterState.searchQuery)
+            }
         },
         bottomBar = {
             NavigationBar {

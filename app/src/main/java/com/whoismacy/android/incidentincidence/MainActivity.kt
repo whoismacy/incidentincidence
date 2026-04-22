@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
-import com.whoismacy.android.incidentincidence.view.IncidentIncidenceScreen
 import com.whoismacy.android.incidentincidence.view.RootNavController
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import dagger.hilt.android.AndroidEntryPoint

@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.splash.screen)
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization)
+    implementation(libs.material.icons)
     implementation("com.google.dagger:hilt-android:2.59.1")
     ksp("com.google.dagger:hilt-android-compiler:2.59.1")
     testImplementation(libs.junit)

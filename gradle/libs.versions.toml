@@ -16,8 +16,10 @@ splashScreen = "1.2.0"
 material3Vers = "1.4.0"
 navVersion = "2.9.7"
 kotlinSerialisationVer = "1.11.0"
+materialIconsVers = "1.7.8"
 
 [libraries]
+material-icons = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "materialIconsVers" }
 kotlinx-serialization =  { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialisationVer" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navVersion"}
 splash-screen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen"}

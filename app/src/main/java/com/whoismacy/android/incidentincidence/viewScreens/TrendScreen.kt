@@ -1,20 +1,210 @@
 package com.whoismacy.android.incidentincidence.viewScreens
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
 
 @Composable
 fun TrendScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        contentAlignment = Alignment.Center,
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("content coming soon")
+        Text(
+            text = "Incident Insights",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            textAlign = TextAlign.Center,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth().height(180.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            BentoBox(
+                modifier = Modifier.weight(1.5f).fillMaxHeight(),
+                title = "Total Incidents",
+                value = "248",
+                icon = Icons.Rounded.Notifications,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            )
+            BentoBox(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                title = "Shares",
+                value = "1.2k",
+                icon = Icons.Rounded.Share,
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().height(240.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            BentoBox(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                title = "Resolved",
+                value = "182",
+                icon = Icons.Rounded.CheckCircle,
+                containerColor = Color(0xFFE8F5E9),
+                contentColor = Color(0xFF2E7D32),
+            )
+            Column(
+                modifier = Modifier.weight(1.5f).fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                BentoBox(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    title = "Severe",
+                    value = "24",
+                    icon = Icons.Default.Warning,
+                    contentColor = Color(0xFFFF2E2E),
+                    containerColor = Color(0xFFFFC6AD),
+                    horizontal = true,
+                )
+                BentoBox(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    title = "High",
+                    value = "16",
+                    icon = Icons.Rounded.Star,
+                    contentColor = Color(0xFFFFB234),
+                    containerColor = Color(0xFFFFE0AE),
+                    horizontal = true,
+                )
+                BentoBox(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    title = "Medium",
+                    value = "12",
+                    icon = Icons.Default.Warning,
+                    contentColor = Color(0xFF99821F),
+                    containerColor = Color(0xFFFFF0AE),
+                    horizontal = true,
+                )
+                BentoBox(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    title = "Low",
+                    value = "08",
+                    icon = Icons.Rounded.Star,
+                    contentColor = Color(0xFFADD633),
+                    containerColor = Color(0xFFDEEFAD),
+                    horizontal = true,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BentoBox(
+    modifier: Modifier = Modifier,
+    title: String,
+    value: String,
+    icon: ImageVector,
+    containerColor: Color,
+    contentColor: Color,
+    horizontal: Boolean = false,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = containerColor,
+                contentColor = contentColor,
+            ),
+        elevation = CardDefaults.cardElevation(0.dp),
+    ) {
+        if (horizontal) {
+            Row(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.alpha(0.8f),
+                )
+                Text(
+                    text = title.uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(20.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp).alpha(0.8f),
+                )
+                Column {
+                    Text(
+                        text = value,
+                        style = MaterialTheme.typography.displaySmall,
+                        fontWeight = FontWeight.Bold,
+                        lineHeight = 36.sp,
+                    )
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.alpha(0.7f),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TrendScreenPreview() {
+    IncidentIncidenceTheme {
+        TrendScreen()
     }
 }
