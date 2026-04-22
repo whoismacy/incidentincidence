@@ -5,21 +5,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 
 @Composable
-fun Fab(navController: NavController) {
+fun Fab(rootNavController: NavController) {
     ExtendedFloatingActionButton(
         onClick = {
-            navController.navigate(CreateIncident) {
-                popUpTo(CreateIncident) {
-                    inclusive = true
+            rootNavController.navigate(CreateIncidentRoute) {
+                popUpTo(IncidentIncidenceRoute) {
                     saveState = true
                 }
             }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,8 +17,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +47,7 @@ enum class SeverityOptions {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewIncident(
-    navController: NavController,
+    rootNavController: NavController,
     modifier: Modifier = Modifier,
     viewModel: IncidentViewModel = hiltViewModel<IncidentViewModel>(),
 ) {
@@ -52,64 +55,69 @@ fun NewIncident(
     var checkBoxState by rememberSaveable { mutableStateOf(SeverityOptions.LOW) }
     val changeCheckBoxState: (SeverityOptions) -> Unit = { option -> checkBoxState = option }
 
-    Column(
-        horizontalAlignment = Alignment.Start,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .padding(64.dp),
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        contentColor = contentColorFor(backgroundColor = MaterialTheme.colorScheme.background),
     ) {
-        Text(
-            "Create new Incident",
-            style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.padding(vertical = 8.dp),
-        )
-
-        OutlinedTextField(
-            value = incidentText,
-            onValueChange = { text: String -> incidentText = text },
-            keyboardOptions =
-                KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences,
-                    keyboardType = KeyboardType.Text,
-                ),
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Describe the Incident") },
-            singleLine = false,
-            minLines = 3,
-            maxLines = 5,
-            shape = MaterialTheme.shapes.medium,
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(24.dp))
-        SeverityOptions(checkBoxState, changeCheckBoxState)
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier =
+                modifier
+                    .fillMaxSize()
+                    .padding(64.dp),
         ) {
-            TextButton(
-                modifier = Modifier.padding(end = 8.dp),
-                onClick = {
-                    navController.popBackStack()
-                },
+            Text(
+                "Create new Incident",
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+
+            OutlinedTextField(
+                value = incidentText,
+                onValueChange = { text: String -> incidentText = text },
+                keyboardOptions =
+                    KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences,
+                        keyboardType = KeyboardType.Text,
+                    ),
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Describe the Incident") },
+                singleLine = false,
+                minLines = 3,
+                maxLines = 5,
+                shape = MaterialTheme.shapes.medium,
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(24.dp))
+            SeverityOptions(checkBoxState, changeCheckBoxState)
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Cancel")
-            }
-            Button(
-                enabled = incidentText.isNotBlank(),
-                onClick = {
-                    if (incidentText.isNotBlank()) {
-                        viewModel.add(incidentText, checkBoxState.name.lowercase())
-                        navController.popBackStack()
-                    }
-                },
-            ) {
-                Text("Create")
+                TextButton(
+                    modifier = Modifier.padding(end = 8.dp),
+                    onClick = {
+                        rootNavController.popBackStack()
+                    },
+                ) {
+                    Text("Cancel")
+                }
+                Button(
+                    enabled = incidentText.isNotBlank(),
+                    onClick = {
+                        if (incidentText.isNotBlank()) {
+                            viewModel.add(incidentText, checkBoxState.name.lowercase())
+                            rootNavController.popBackStack()
+                        }
+                    },
+                ) {
+                    Text("Create")
+                }
             }
         }
     }

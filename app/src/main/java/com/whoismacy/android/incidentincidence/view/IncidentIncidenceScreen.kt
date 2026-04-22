@@ -1,14 +1,5 @@
 package com.whoismacy.android.incidentincidence.view
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -24,40 +15,40 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.viewScreens.HomeScreen
 import com.whoismacy.android.incidentincidence.viewScreens.SolvedIncidentsScreen
+import com.whoismacy.android.incidentincidence.viewScreens.TrendScreen
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
-object Home
+object HomeRoute
 
 @Serializable
-object SolvedIncidents
+object SolvedIncidentsRoute
 
 @Serializable
-object CreateIncident
+object TrendRoute
 
 @Composable
 fun IncidentIncidenceScreen(
+    rootNavController: NavController,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     val displayData by viewModel
@@ -68,69 +59,79 @@ fun IncidentIncidenceScreen(
         .displayFilterState
         .collectAsStateWithLifecycle()
 
-    val navController = rememberNavController()
-    val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var currentDestination: String by remember { mutableStateOf("Home") }
-    val visible =
-        remember {
-            derivedStateOf {
-                !currentDestination
-                    .contains("CreateIncident")
-            }
-        }.value
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val navController = rememberNavController()
+    val navBackStack by navController.currentBackStackEntryAsState()
+
+    val currentDestination = navBackStack?.destination?.route ?: ""
 
     Scaffold(
         topBar = {
-            Animate(visible = visible) {
-                SearchBar(displayFilterState.searchQuery)
-            }
+            SearchBar(displayFilterState.searchQuery)
         },
         bottomBar = {
-            Animate(visible = visible) {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = currentDestination.contains("Home"),
-                        onClick = {
-                            navController.navigate(Home) {
-                                popUpTo(Home) {
-                                    inclusive = true
-                                    saveState = true
-                                }
+            NavigationBar {
+                NavigationBarItem(
+                    selected = currentDestination.contains("Home"),
+                    onClick = {
+                        navController.navigate(HomeRoute) {
+                            popUpTo(HomeRoute) {
+                                saveState = true
                             }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.outline_free_breakfast_24),
-                                contentDescription = null,
-                            )
-                        },
-                        label = {
-                            Text("Home")
-                        },
-                    )
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_free_breakfast_24),
+                            contentDescription = null,
+                        )
+                    },
+                    label = {
+                        Text("Home")
+                    },
+                )
 
-                    NavigationBarItem(
-                        selected = currentDestination.contains("SolvedIncidents"),
-                        onClick = {
-                            navController.navigate(SolvedIncidents) {
-                                popUpTo(SolvedIncidents) {
-                                    inclusive = true
-                                    saveState = true
-                                }
+                NavigationBarItem(
+                    selected = currentDestination.contains("SolvedIncidents"),
+                    onClick = {
+                        navController.navigate(SolvedIncidentsRoute) {
+                            popUpTo(HomeRoute) {
+                                saveState = true
                             }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.outline_star_shine_24),
-                                contentDescription = null,
-                            )
-                        },
-                        label = {
-                            Text("Solved")
-                        },
-                    )
-                }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.outline_star_shine_24),
+                            contentDescription = null,
+                        )
+                    },
+                    label = {
+                        Text("Solved")
+                    },
+                )
+
+                NavigationBarItem(
+                    selected = currentDestination.contains("Trend"),
+                    onClick = {
+                        navController.navigate(TrendRoute) {
+                            popUpTo(HomeRoute) {
+                                saveState = true
+                            }
+                        }
+                    },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_trending_up_24),
+                            contentDescription = null,
+                        )
+                    },
+                    label = {
+                        Text("Trend")
+                    },
+                )
             }
         },
         snackbarHost = {
@@ -150,26 +151,24 @@ fun IncidentIncidenceScreen(
             }
         },
         floatingActionButton = {
-            Animate(visible = visible) {
-                Fab(navController)
-            }
+            Fab(rootNavController)
         },
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Home,
+            startDestination = HomeRoute,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable<Home> {
+            composable<HomeRoute> {
                 HomeScreen(incidences = displayData)
             }
 
-            composable<SolvedIncidents> {
+            composable<SolvedIncidentsRoute> {
                 SolvedIncidentsScreen(incidences = displayData)
             }
 
-            composable<CreateIncident> {
-                NewIncident(navController)
+            composable<TrendRoute> {
+                TrendScreen()
             }
         }
     }
@@ -189,27 +188,5 @@ fun IncidentIncidenceScreen(
                 }
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntryFlow.collect { backStackEntry ->
-            currentDestination = backStackEntry
-                .destination.route
-                ?.substringBefore("?") ?: ""
-        }
-    }
-}
-
-@Composable
-fun Animate(
-    visible: Boolean,
-    content: @Composable () -> Unit,
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
-    ) {
-        content()
     }
 }
