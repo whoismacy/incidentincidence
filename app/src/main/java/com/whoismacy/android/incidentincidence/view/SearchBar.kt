@@ -45,7 +45,7 @@ fun SearchBar(
             .value.filtersEnabled
 
     Box(
-        modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 32.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 48.dp, bottom = 32.dp),
         contentAlignment = Alignment.Center,
     ) {
         Row(

@@ -10,14 +10,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 
 @Composable
-fun Fab() {
-    var displayOutlinedCard by rememberSaveable { mutableStateOf(false) }
+fun Fab(navController: NavController) {
     ExtendedFloatingActionButton(
         onClick = {
-            displayOutlinedCard = !displayOutlinedCard
+            navController.navigate(CreateIncident) {
+                popUpTo(CreateIncident) {
+                    inclusive = true
+                    saveState = true
+                }
+            }
         },
         icon = {
             Icon(
@@ -30,14 +35,4 @@ fun Fab() {
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         expanded = true,
     )
-
-    if (displayOutlinedCard) {
-        NewIncidentCard(
-            onDismissRequest =
-                { displayOutlinedCard = false },
-            { newState: Boolean ->
-                displayOutlinedCard = newState
-            },
-        )
-    }
 }

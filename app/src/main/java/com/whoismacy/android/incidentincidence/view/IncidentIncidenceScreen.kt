@@ -1,5 +1,14 @@
 package com.whoismacy.android.incidentincidence.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -15,10 +24,12 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,73 +54,83 @@ object Home
 object SolvedIncidents
 
 @Serializable
-object NewIncident
+object CreateIncident
 
 @Composable
-fun MainScreen(
+fun IncidentIncidenceScreen(
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     val displayData by viewModel
         .displayIncidences
         .collectAsStateWithLifecycle(emptyList())
 
+    val displayFilterState by viewModel
+        .displayFilterState
+        .collectAsStateWithLifecycle()
+
     val navController = rememberNavController()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var currentDestination: String by remember { mutableStateOf("Home") }
-
-    LaunchedEffect(Unit) {
-        navController.currentBackStackEntryFlow.collect { backStackEntry ->
-            currentDestination = backStackEntry
-                .destination.route
-                ?.substringBefore("?") ?: ""
-        }
-    }
+    val visible =
+        remember {
+            derivedStateOf {
+                !currentDestination
+                    .contains("CreateIncident")
+            }
+        }.value
 
     Scaffold(
+        topBar = {
+            Animate(visible = visible) {
+                SearchBar(displayFilterState.searchQuery)
+            }
+        },
         bottomBar = {
-            NavigationBar {
-                NavigationBarItem(
-                    selected = currentDestination.contains("Home"),
-                    onClick = {
-                        navController.navigate(Home) {
-                            popUpTo(Home) {
-                                inclusive = true
+            Animate(visible = visible) {
+                NavigationBar {
+                    NavigationBarItem(
+                        selected = currentDestination.contains("Home"),
+                        onClick = {
+                            navController.navigate(Home) {
+                                popUpTo(Home) {
+                                    inclusive = true
+                                    saveState = true
+                                }
                             }
-                        }
-                        currentDestination = "Home"
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_free_breakfast_24),
-                            contentDescription = null,
-                        )
-                    },
-                    label = {
-                        Text("Home")
-                    },
-                )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_free_breakfast_24),
+                                contentDescription = null,
+                            )
+                        },
+                        label = {
+                            Text("Home")
+                        },
+                    )
 
-                NavigationBarItem(
-                    selected = currentDestination.contains("SolvedIncidents"),
-                    onClick = {
-                        navController.navigate(SolvedIncidents) {
-                            popUpTo(SolvedIncidents) {
-                                inclusive = true
+                    NavigationBarItem(
+                        selected = currentDestination.contains("SolvedIncidents"),
+                        onClick = {
+                            navController.navigate(SolvedIncidents) {
+                                popUpTo(SolvedIncidents) {
+                                    inclusive = true
+                                    saveState = true
+                                }
                             }
-                        }
-                        currentDestination = "SolvedIncidents"
-                    },
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.outline_star_shine_24),
-                            contentDescription = null,
-                        )
-                    },
-                    label = {
-                        Text("Solved")
-                    },
-                )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.outline_star_shine_24),
+                                contentDescription = null,
+                            )
+                        },
+                        label = {
+                            Text("Solved")
+                        },
+                    )
+                }
             }
         },
         snackbarHost = {
@@ -128,6 +149,11 @@ fun MainScreen(
                 )
             }
         },
+        floatingActionButton = {
+            Animate(visible = visible) {
+                Fab(navController)
+            }
+        },
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -140,6 +166,10 @@ fun MainScreen(
 
             composable<SolvedIncidents> {
                 SolvedIncidentsScreen(incidences = displayData)
+            }
+
+            composable<CreateIncident> {
+                NewIncident(navController)
             }
         }
     }
@@ -159,5 +189,27 @@ fun MainScreen(
                 }
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStackEntryFlow.collect { backStackEntry ->
+            currentDestination = backStackEntry
+                .destination.route
+                ?.substringBefore("?") ?: ""
+        }
+    }
+}
+
+@Composable
+fun Animate(
+    visible: Boolean,
+    content: @Composable () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically(),
+    ) {
+        content()
     }
 }

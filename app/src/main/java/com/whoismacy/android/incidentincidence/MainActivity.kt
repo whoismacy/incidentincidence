@@ -5,14 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
-import com.whoismacy.android.incidentincidence.view.Fab
-import com.whoismacy.android.incidentincidence.view.MainScreen
+import com.whoismacy.android.incidentincidence.view.IncidentIncidenceScreen
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,7 +25,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IncidentIncidenceTheme {
-                MainScreen()
+                IncidentIncidenceScreen()
             }
         }
     }
