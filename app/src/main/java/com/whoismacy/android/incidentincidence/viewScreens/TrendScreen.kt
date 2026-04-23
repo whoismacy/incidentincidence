@@ -152,7 +152,7 @@ fun BentoBox(
                 containerColor = containerColor,
                 contentColor = contentColor,
             ),
-        elevation = CardDefaults.cardElevation(0.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
     ) {
         if (horizontal) {
             Row(
@@ -163,13 +163,13 @@ fun BentoBox(
                 Text(
                     text = value,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.alpha(0.8f),
                 )
                 Text(
                     text = title.uppercase(),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         } else {
@@ -182,7 +182,9 @@ fun BentoBox(
                     contentDescription = null,
                     modifier = Modifier.size(28.dp).alpha(0.8f),
                 )
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.Start,
+                ) {
                     Text(
                         text = value,
                         style = MaterialTheme.typography.displaySmall,
@@ -198,13 +200,5 @@ fun BentoBox(
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun TrendScreenPreview() {
-    IncidentIncidenceTheme {
-        TrendScreen()
     }
 }

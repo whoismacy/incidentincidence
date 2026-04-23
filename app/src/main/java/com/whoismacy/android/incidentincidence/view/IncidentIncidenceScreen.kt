@@ -1,6 +1,12 @@
 package com.whoismacy.android.incidentincidence.view
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -17,12 +23,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,6 +80,8 @@ fun IncidentIncidenceScreen(
         topBar = {
             AnimatedVisibility(
                 visible = visible,
+                enter = fadeIn(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + expandVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing)),
+                exit = fadeOut(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + shrinkVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing)),
             ) {
                 SearchBar(displayFilterState.searchQuery)
             }
@@ -158,7 +166,13 @@ fun IncidentIncidenceScreen(
             }
         },
         floatingActionButton = {
-            Fab(rootNavController)
+            AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + expandVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing)),
+                exit = fadeOut(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + shrinkVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing)),
+            ) {
+                Fab(rootNavController)
+            }
         },
     ) { innerPadding ->
         NavHost(
