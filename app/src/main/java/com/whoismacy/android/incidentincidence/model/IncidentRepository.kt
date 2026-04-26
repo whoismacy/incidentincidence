@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class IncidentRepository(
@@ -13,6 +14,7 @@ class IncidentRepository(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     val allIncidences: Flow<List<Incident>> = incidentsDao.getAllIncidences()
+    val totalShares: Flow<Int> = incidentsDao.getAllShares()
 
     fun add(
         content: String,

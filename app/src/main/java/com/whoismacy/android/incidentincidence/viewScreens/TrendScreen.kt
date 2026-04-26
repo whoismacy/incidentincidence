@@ -35,10 +35,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
+import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
-fun TrendScreen() {
+fun TrendScreen(
+    viewModel: IncidentViewModel = hiltViewModel(),
+) {
+    val trendScreenObject =
+        viewModel
+            .trendsObject
+            .collectAsStateWithLifecycle()
+            .value
+
     Column(
         modifier =
             Modifier
@@ -63,7 +74,7 @@ fun TrendScreen() {
             BentoBox(
                 modifier = Modifier.weight(1.5f).fillMaxHeight(),
                 title = "Total Incidents",
-                value = "248",
+                value = "$trendScreenObject.totalIncidents",
                 icon = Icons.Rounded.Notifications,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -71,7 +82,7 @@ fun TrendScreen() {
             BentoBox(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = "Shares",
-                value = "1.2k",
+                value = "${trendScreenObject.totalShares}",
                 icon = Icons.Rounded.Share,
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
@@ -84,7 +95,7 @@ fun TrendScreen() {
             BentoBox(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = "Resolved",
-                value = "182",
+                value = "${trendScreenObject.totalResolved}",
                 icon = Icons.Rounded.CheckCircle,
                 containerColor = Color(0xFFE8F5E9),
                 contentColor = Color(0xFF2E7D32),
@@ -96,7 +107,7 @@ fun TrendScreen() {
                 BentoBox(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     title = "Severe",
-                    value = "24",
+                    value = "${trendScreenObject.severityCount.severe}",
                     icon = Icons.Default.Warning,
                     contentColor = Color(0xFFFF2E2E),
                     containerColor = Color(0xFFFFC6AD),
@@ -105,7 +116,7 @@ fun TrendScreen() {
                 BentoBox(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     title = "High",
-                    value = "16",
+                    value = "${trendScreenObject.severityCount.high}",
                     icon = Icons.Rounded.Star,
                     contentColor = Color(0xFFFFB234),
                     containerColor = Color(0xFFFFE0AE),
@@ -114,7 +125,7 @@ fun TrendScreen() {
                 BentoBox(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     title = "Medium",
-                    value = "12",
+                    value = "${trendScreenObject.severityCount.medium}",
                     icon = Icons.Default.Warning,
                     contentColor = Color(0xFF99821F),
                     containerColor = Color(0xFFFFF0AE),
@@ -123,7 +134,7 @@ fun TrendScreen() {
                 BentoBox(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     title = "Low",
-                    value = "08",
+                    value = "${trendScreenObject.severityCount.low}",
                     icon = Icons.Rounded.Star,
                     contentColor = Color(0xFFADD633),
                     containerColor = Color(0xFFDEEFAD),
@@ -201,4 +212,10 @@ fun BentoBox(
             }
         }
     }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun TrendScreenPreview() {
+    TrendScreen()
 }

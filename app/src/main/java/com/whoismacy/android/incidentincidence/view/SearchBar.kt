@@ -1,18 +1,15 @@
 package com.whoismacy.android.incidentincidence.view
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.unveilIn
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -63,7 +60,6 @@ fun SearchBar(
                 value = state,
                 onValueChange = { viewModel.updateSearchQuery(it) },
                 singleLine = true,
-                shape = MaterialTheme.shapes.extraLarge,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 placeholder = {
                     Text("Search")
@@ -74,27 +70,25 @@ fun SearchBar(
                         contentDescription = null,
                     )
                 },
+                shape = MaterialTheme.shapes.extraLarge,
                 colors =
                     TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
                     ),
             )
             Spacer(modifier = Modifier.width(8.dp))
             if (!showFilter) {
-                Icon(
-                    painter = painterResource(R.drawable.sharp_filter_alt_24),
-                    contentDescription = "Filter Icon",
-                    modifier =
-                        Modifier
-                            .size(32.dp)
-                            .clickable(
-                                onClickLabel = "Filter",
-                                onClick = {
-                                    changeSortFilterState(true)
-                                },
-                            ),
-                )
+                IconButton(onClick = {
+                    changeSortFilterState(true)
+                }) {
+                    Icon(
+                        painter = painterResource(R.drawable.sharp_filter_alt_24),
+                        contentDescription = "Filter Icon",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             } else {
                 TextButton(onClick = {
                     viewModel.toggleFilters()

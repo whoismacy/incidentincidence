@@ -2,6 +2,7 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.sqlite.SQLITE_DATA_TEXT
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
@@ -9,10 +10,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -25,6 +28,20 @@ data class SnackbarEvent(
     val message: String,
     val actionLabel: String? = null,
     val action: suspend () -> Unit = {},
+)
+
+data class SeverityCount(
+    val low: Int = 0,
+    val medium: Int = 0,
+    val high: Int = 0,
+    val severe: Int = 0,
+)
+
+data class TrendScreenObject(
+    val totalIncidents: Int = 0,
+    val totalShares: Flow<Int> = flow { emit(0) },
+    val totalResolved: Int = 0,
+    val severityCount: SeverityCount = SeverityCount(),
 )
 
 @HiltViewModel
@@ -42,9 +59,34 @@ class IncidentViewModel
         private val _isAvailable = MutableStateFlow(false)
         val isAvailable = _isAvailable.asStateFlow()
 
+        private var _trendsObject = MutableStateFlow(TrendScreenObject())
+        val trendsObject = _trendsObject.asStateFlow()
+
         init {
             viewModelScope.launch {
                 delay(1.seconds)
+                repository.allIncidences.collect { incidents ->
+                    val totalCount = incidents.count()
+                    val resolvedCount = incidents.count { it.resolved }
+                    val lowCount = incidents.count { it.severity == "low" }
+                    val mediumCount = incidents.count { it.severity == "medium" }
+                    val highCount = incidents.count { it.severity == "high" }
+                    val severeCount = incidents.count { it.severity == "severe" }
+
+                    _trendsObject.value =
+                        TrendScreenObject(
+                            totalIncidents = totalCount,
+                            totalShares = repository.totalShares,
+                            totalResolved = resolvedCount,
+                            severityCount =
+                                SeverityCount(
+                                    low = lowCount,
+                                    medium = mediumCount,
+                                    high = highCount,
+                                    severe = severeCount,
+                                ),
+                        )
+                }
                 _isAvailable.value = true
             }
         }
