@@ -74,7 +74,7 @@ fun TrendScreen(
             BentoBox(
                 modifier = Modifier.weight(1.5f).fillMaxHeight(),
                 title = "Total Incidents",
-                value = "$trendScreenObject.totalIncidents",
+                value = "${trendScreenObject.totalIncidents}",
                 icon = Icons.Rounded.Notifications,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -82,7 +82,7 @@ fun TrendScreen(
             BentoBox(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 title = "Shares",
-                value = "${trendScreenObject.totalShares}",
+                value = "${trendScreenObject.totalShares.collectAsStateWithLifecycle(0).value}",
                 icon = Icons.Rounded.Share,
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,

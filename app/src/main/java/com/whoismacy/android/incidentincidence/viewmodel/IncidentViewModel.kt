@@ -2,14 +2,12 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.sqlite.SQLITE_DATA_TEXT
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,7 +20,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 data class SnackbarEvent(
     val message: String,
@@ -56,15 +53,11 @@ class IncidentViewModel
         private val _displayFilterState = MutableStateFlow(DisplayFilterState())
         val displayFilterState = _displayFilterState.asStateFlow()
 
-        private val _isAvailable = MutableStateFlow(false)
-        val isAvailable = _isAvailable.asStateFlow()
-
         private var _trendsObject = MutableStateFlow(TrendScreenObject())
         val trendsObject = _trendsObject.asStateFlow()
 
         init {
             viewModelScope.launch {
-                delay(1.seconds)
                 repository.allIncidences.collect { incidents ->
                     val totalCount = incidents.count()
                     val resolvedCount = incidents.count { it.resolved }
@@ -87,7 +80,6 @@ class IncidentViewModel
                                 ),
                         )
                 }
-                _isAvailable.value = true
             }
         }
 
