@@ -20,6 +20,9 @@ interface IncidentDao {
     @Query("SELECT * FROM `incidences`;")
     fun getAllIncidences(): Flow<List<Incident>>
 
+    @Query("SELECT SUM(`total_shares`) FROM `incidences`;")
+    fun getAllShares(): Flow<Int>
+
     @Query("SELECT * FROM `incidences` WHERE content LIKE '%' || :searchContent || '%'; ")
     fun searchIncident(searchContent: String): Flow<List<Incident>>
 

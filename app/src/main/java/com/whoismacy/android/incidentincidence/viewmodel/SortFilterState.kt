@@ -9,7 +9,6 @@ enum class SortValues(
 ) : SortFilter {
     NEWEST("Newest first"),
     OLDEST("Oldest first"),
-    SHUFFLE("Shuffle"),
 }
 
 enum class FilterSevereValues(

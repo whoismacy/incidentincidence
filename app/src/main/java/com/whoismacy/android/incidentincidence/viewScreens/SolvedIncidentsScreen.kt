@@ -5,14 +5,12 @@ import androidx.compose.ui.Modifier
 import com.whoismacy.android.incidentincidence.model.Incident
 
 @Composable
-fun Solved(
+fun SolvedIncidentsScreen(
     modifier: Modifier = Modifier,
-    incidences: List<Incident> = emptyList<Incident>(),
+    incidences: List<Incident> = emptyList(),
 ) {
     DisplayList(
         incidences.filter { incident -> incident.resolved },
-        "Uh-oh!!\n" +
-            "No solved incidents",
         modifier,
     )
 }

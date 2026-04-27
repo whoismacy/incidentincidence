@@ -5,19 +5,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 
 @Composable
-fun Fab() {
-    var displayOutlinedCard by rememberSaveable { mutableStateOf(false) }
+fun Fab(rootNavController: NavController) {
     ExtendedFloatingActionButton(
         onClick = {
-            displayOutlinedCard = !displayOutlinedCard
+            rootNavController.navigate(CreateIncidentRoute) {
+                popUpTo(IncidentIncidenceRoute) {
+                    saveState = true
+                }
+            }
         },
         icon = {
             Icon(
@@ -30,14 +30,4 @@ fun Fab() {
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         expanded = true,
     )
-
-    if (displayOutlinedCard) {
-        NewIncidentCard(
-            onDismissRequest =
-                { displayOutlinedCard = false },
-            { newState: Boolean ->
-                displayOutlinedCard = newState
-            },
-        )
-    }
 }

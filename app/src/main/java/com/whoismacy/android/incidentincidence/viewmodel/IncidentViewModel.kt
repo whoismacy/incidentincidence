@@ -2,16 +2,22 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.model.IncidentRepository
+import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,6 +26,18 @@ data class SnackbarEvent(
     val actionLabel: String? = null,
     val action: suspend () -> Unit = {},
 )
+
+sealed class Result<out T> {
+    object Loading : Result<Nothing>()
+
+    data class Success<out T>(
+        val data: T,
+    ) : Result<T>()
+
+    data class Error(
+        val exception: Throwable,
+    ) : Result<Nothing>()
+}
 
 @HiltViewModel
 class IncidentViewModel
@@ -30,32 +48,81 @@ class IncidentViewModel
         private val _snackbarEvents = Channel<SnackbarEvent>()
         val snackbarEvents = _snackbarEvents.receiveAsFlow()
 
-        private val _searchQuery = MutableStateFlow("")
-        val searchQuery = _searchQuery.asStateFlow()
+        private val _displayFilterState = MutableStateFlow(DisplayFilterState())
+        val displayFilterState = _displayFilterState.asStateFlow()
 
-        private val _currentSortValue = MutableStateFlow(SortValues.NEWEST)
-        val currentSortValue = _currentSortValue.asStateFlow()
-        private val _currentFilterSevereValue = MutableStateFlow(FilterSevereValues.LOW)
-        val currentFilterSevereValue = _currentFilterSevereValue.asStateFlow()
-        private val _currentFilterPeriodValue = MutableStateFlow(FilterPeriodValues.TODAY)
-        val currentFilterPeriodValue = _currentFilterPeriodValue.asStateFlow()
+        private val _trendsObject = MutableStateFlow(TrendScreenObject())
+        val trendsObject = _trendsObject.asStateFlow()
 
-        val filtersPresent: Boolean = false
+        private val _isLoading = MutableStateFlow(true)
+        val isLoading = _isLoading.asStateFlow()
+
+        init {
+            viewModelScope.launch {
+                repository.allIncidences.collect { incidents ->
+                    val totalCount = incidents.count()
+                    val resolvedCount = incidents.count { it.resolved }
+                    val lowCount = incidents.count { it.severity == "low" }
+                    val mediumCount = incidents.count { it.severity == "medium" }
+                    val highCount = incidents.count { it.severity == "high" }
+                    val severeCount = incidents.count { it.severity == "severe" }
+
+                    _trendsObject.value =
+                        TrendScreenObject(
+                            totalIncidents = totalCount,
+                            totalShares = repository.totalShares,
+                            totalResolved = resolvedCount,
+                            severityCount =
+                                SeverityCount(
+                                    low = lowCount,
+                                    medium = mediumCount,
+                                    high = highCount,
+                                    severe = severeCount,
+                                ),
+                        )
+                    _isLoading.value = false
+                }
+            }
+        }
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val displayIncidences =
-            _searchQuery
-                .flatMapLatest { query ->
-                    if (query.isBlank()) {
-                        repository.allIncidences
+            displayFilterState
+                .flatMapLatest { state ->
+                    if (state.filtersEnabled) {
+                        repository.allIncidences.map { incidents ->
+                            incidents
+                                .filter { incident ->
+                                    incident
+                                        .severity
+                                        .equals(state.filterSevere.value, ignoreCase = true)
+                                }.filter { incident ->
+                                    filterAccordingToDate(incident, state.filtersPeriod)
+                                }.let {
+                                    applySorting(it, state.sortValue)
+                                }
+                        }
                     } else {
-                        repository.searchIncident(query)
+                        if (state.searchQuery.isBlank()) {
+                            repository.allIncidences
+                        } else {
+                            repository.searchIncident(state.searchQuery)
+                        }
                     }
                 }.stateIn(
                     viewModelScope,
                     SharingStarted.WhileSubscribed(5000),
                     emptyList(),
                 )
+
+        private fun applySorting(
+            incidents: List<Incident>,
+            sortValue: SortValues,
+        ): List<Incident> =
+            when (sortValue) {
+                SortValues.NEWEST -> incidents.sortedBy { it.dateAdded }.reversed()
+                SortValues.OLDEST -> incidents.sortedBy { it.dateAdded }
+            }
 
         fun add(
             content: String,
@@ -67,7 +134,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident added successfully",
-                            actionLabel = "Undo",
                             action = {},
                         ),
                     )
@@ -101,7 +167,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident deleted",
-                            actionLabel = "Undo",
                             action = {},
                         ),
                     )
@@ -114,18 +179,50 @@ class IncidentViewModel
         }
 
         fun updateSearchQuery(query: String) {
-            _searchQuery.value = query
+            _displayFilterState.update {
+                it.copy(searchQuery = query)
+            }
         }
 
-        fun updateCurrentSortValue(value: SortValues) {
-            _currentSortValue.value = value
+        fun updateSortValue(value: SortValues) {
+            _displayFilterState.update {
+                it.copy(sortValue = value)
+            }
         }
 
-        fun updateCurrentFilterSevereValue(value: FilterSevereValues) {
-            _currentFilterSevereValue.value = value
+        fun updateFilterSevereValue(value: FilterSevereValues) {
+            _displayFilterState.update {
+                it.copy(
+                    filterSevere = value,
+                )
+            }
         }
 
         fun updateCurrentFilterPeriodValue(value: FilterPeriodValues) {
-            _currentFilterPeriodValue.value = value
+            _displayFilterState.update {
+                it.copy(
+                    filtersPeriod = value,
+                )
+            }
+        }
+
+        fun toggleFilterEnabled(value: Boolean) {
+            _displayFilterState.update {
+                it.copy(
+                    filtersEnabled = value,
+                )
+            }
+        }
+
+        fun toggleFilters() {
+            _displayFilterState.update {
+                it.copy(
+                    searchQuery = "",
+                    filtersPeriod = FilterPeriodValues.TODAY,
+                    filterSevere = FilterSevereValues.LOW,
+                    sortValue = SortValues.NEWEST,
+                    filtersEnabled = false,
+                )
+            }
         }
     }

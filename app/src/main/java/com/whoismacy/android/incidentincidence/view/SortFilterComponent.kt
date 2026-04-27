@@ -17,7 +17,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,22 +34,22 @@ fun SortFilterComponent(
 ) {
     val currentSortValue =
         viewModel
-            .currentSortValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.sortValue
     val currentFilterSevereValue =
         viewModel
-            .currentFilterSevereValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.filterSevere
     val currentFilterPeriodValue =
         viewModel
-            .currentFilterPeriodValue
+            .displayFilterState
             .collectAsStateWithLifecycle()
-            .value
+            .value.filtersPeriod
 
-    val changeSortValue: (SortValues) -> Unit = { viewModel.updateCurrentSortValue(it) }
-    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateCurrentFilterSevereValue(it) }
+    val changeSortValue: (SortValues) -> Unit = { viewModel.updateSortValue(it) }
+    val changeFilterSevereValue: (FilterSevereValues) -> Unit = { viewModel.updateFilterSevereValue(it) }
     val changeFilterPeriodValue: (FilterPeriodValues) -> Unit = { viewModel.updateCurrentFilterPeriodValue(it) }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -113,7 +112,9 @@ fun SortFilterComponent(
             )
             Spacer(modifier = Modifier.height(48.dp))
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    viewModel.toggleFilterEnabled(true)
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Apply")

@@ -13,6 +13,7 @@ class IncidentRepository(
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     val allIncidences: Flow<List<Incident>> = incidentsDao.getAllIncidences()
+    val totalShares: Flow<Int> = incidentsDao.getAllShares()
 
     fun add(
         content: String,
