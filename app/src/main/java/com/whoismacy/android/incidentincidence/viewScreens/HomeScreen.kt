@@ -11,7 +11,6 @@ fun HomeScreen(
 ) {
     DisplayList(
         incidences.filter { incident -> !incident.resolved },
-        "No Incidents found.\n Create new Incidents to see them here",
         modifier,
     )
 }

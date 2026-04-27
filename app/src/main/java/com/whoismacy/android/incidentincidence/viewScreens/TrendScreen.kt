@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
+import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
@@ -145,6 +146,7 @@ fun TrendScreen(
     }
 }
 
+@Suppress("kotlin:S107")
 @Composable
 fun BentoBox(
     modifier: Modifier = Modifier,
@@ -154,9 +156,18 @@ fun BentoBox(
     containerColor: Color,
     contentColor: Color,
     horizontal: Boolean = false,
+    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     Card(
-        modifier = modifier,
+        modifier =
+            modifier.shimmer(
+                12.dp,
+                isLoading =
+                    viewModel
+                        .isLoading
+                        .collectAsStateWithLifecycle()
+                        .value,
+            ),
         shape = RoundedCornerShape(24.dp),
         colors =
             CardDefaults.cardColors(

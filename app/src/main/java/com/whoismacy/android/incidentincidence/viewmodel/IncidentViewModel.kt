@@ -27,19 +27,17 @@ data class SnackbarEvent(
     val action: suspend () -> Unit = {},
 )
 
-data class SeverityCount(
-    val low: Int = 0,
-    val medium: Int = 0,
-    val high: Int = 0,
-    val severe: Int = 0,
-)
+sealed class Result<out T> {
+    object Loading : Result<Nothing>()
 
-data class TrendScreenObject(
-    val totalIncidents: Int = 0,
-    val totalShares: Flow<Int> = flow { emit(0) },
-    val totalResolved: Int = 0,
-    val severityCount: SeverityCount = SeverityCount(),
-)
+    data class Success<out T>(
+        val data: T,
+    ) : Result<T>()
+
+    data class Error(
+        val exception: Throwable,
+    ) : Result<Nothing>()
+}
 
 @HiltViewModel
 class IncidentViewModel
@@ -53,8 +51,11 @@ class IncidentViewModel
         private val _displayFilterState = MutableStateFlow(DisplayFilterState())
         val displayFilterState = _displayFilterState.asStateFlow()
 
-        private var _trendsObject = MutableStateFlow(TrendScreenObject())
+        private val _trendsObject = MutableStateFlow(TrendScreenObject())
         val trendsObject = _trendsObject.asStateFlow()
+
+        private val _isLoading = MutableStateFlow(true)
+        val isLoading = _isLoading.asStateFlow()
 
         init {
             viewModelScope.launch {
@@ -79,6 +80,7 @@ class IncidentViewModel
                                     severe = severeCount,
                                 ),
                         )
+                    _isLoading.value = false
                 }
             }
         }

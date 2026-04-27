@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.R
+import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
@@ -44,6 +45,7 @@ fun SearchBar(
             .displayFilterState
             .collectAsStateWithLifecycle()
             .value.filtersEnabled
+    val isLoading = viewModel.isLoading.collectAsStateWithLifecycle().value
 
     Box(
         modifier = Modifier.fillMaxWidth().padding(top = 48.dp, bottom = 32.dp),
@@ -77,12 +79,16 @@ fun SearchBar(
                         unfocusedIndicatorColor = Color.Transparent,
                         errorIndicatorColor = Color.Transparent,
                     ),
+                modifier = Modifier.shimmer(16.dp, isLoading),
             )
             Spacer(modifier = Modifier.width(8.dp))
             if (!showFilter) {
-                IconButton(onClick = {
-                    changeSortFilterState(true)
-                }) {
+                IconButton(
+                    onClick = {
+                        changeSortFilterState(true)
+                    },
+                    modifier = Modifier.shimmer(8.dp, isLoading),
+                ) {
                     Icon(
                         painter = painterResource(R.drawable.sharp_filter_alt_24),
                         contentDescription = "Filter Icon",

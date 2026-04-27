@@ -11,8 +11,6 @@ fun SolvedIncidentsScreen(
 ) {
     DisplayList(
         incidences.filter { incident -> incident.resolved },
-        "Uh-oh!!\n" +
-            "No solved incidents",
         modifier,
     )
 }
