@@ -1,5 +1,6 @@
 package com.whoismacy.android.incidentincidence.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
@@ -51,6 +55,7 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 fun SingleIncidentMbs(
     incident: Incident,
     onDismissRequest: () -> Unit,
+    rootNavController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
@@ -108,10 +113,12 @@ fun SingleIncidentMbs(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
             ButtonGroup(
-                incident,
-                viewModel,
+                incident = incident,
+                viewModel = viewModel,
                 showDeleteDialog = showDeleteDialog,
-            ) { showDeleteDialog = it }
+                controlDeleteDialog = { showDeleteDialog = it },
+                rootNavController = rootNavController,
+            )
         }
     }
 }
@@ -143,6 +150,7 @@ fun ButtonGroup(
     viewModel: IncidentViewModel,
     showDeleteDialog: Boolean,
     controlDeleteDialog: (Boolean) -> Unit,
+    rootNavController: NavHostController,
 ) {
     val context = LocalContext.current
     Row(
@@ -193,6 +201,33 @@ fun ButtonGroup(
                 )
             }
             Text("Share", style = MaterialTheme.typography.labelMedium)
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            FilledTonalButton(
+                onClick = {
+                    rootNavController.navigate(CaptureImageRoute) {
+                        popUpTo(IncidentIncidenceRoute) {
+                            saveState = true
+                        }
+                    }
+                },
+                colors =
+                    ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
+            ) {
+                Icon(
+                    modifier = Modifier.size(18.dp),
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Edit incident",
+                )
+            }
+            Text("Edit", style = MaterialTheme.typography.labelMedium)
         }
 
         if (!incident.resolved) {

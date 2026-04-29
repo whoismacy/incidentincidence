@@ -8,12 +8,10 @@ import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -26,18 +24,6 @@ data class SnackbarEvent(
     val actionLabel: String? = null,
     val action: suspend () -> Unit = {},
 )
-
-sealed class Result<out T> {
-    object Loading : Result<Nothing>()
-
-    data class Success<out T>(
-        val data: T,
-    ) : Result<T>()
-
-    data class Error(
-        val exception: Throwable,
-    ) : Result<Nothing>()
-}
 
 @HiltViewModel
 class IncidentViewModel
