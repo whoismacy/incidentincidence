@@ -1,16 +1,26 @@
 package com.whoismacy.android.incidentincidence.viewmodel
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
+import androidx.camera.core.ImageCapture.FLASH_MODE_AUTO
+import androidx.camera.core.ImageCapture.OUTPUT_FORMAT_JPEG
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.core.SurfaceRequest
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.model.IncidentRepository
+import com.whoismacy.android.incidentincidence.repository.IncidentRepository
+import com.whoismacy.android.incidentincidence.repository.MediaStoreUtil
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +36,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 data class SnackbarEvent(
@@ -56,11 +67,23 @@ class IncidentViewModel
         val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest.asStateFlow()
 
         private val previewUseCase =
-            Preview.Builder().build().apply {
-                setSurfaceProvider { newSurfaceRequest ->
-                    _surfaceRequest.update { newSurfaceRequest }
+            Preview
+                .Builder()
+                .build()
+                .apply {
+                    setSurfaceProvider { newSurfaceRequest ->
+                        _surfaceRequest.update { newSurfaceRequest }
+                    }
                 }
-            }
+
+        private val imageCapture =
+            ImageCapture
+                .Builder()
+                .apply {
+                    setCaptureMode(CAPTURE_MODE_MAXIMIZE_QUALITY)
+                    setFlashMode(FLASH_MODE_AUTO)
+                    setOutputFormat(OUTPUT_FORMAT_JPEG)
+                }.build()
 
         init {
             viewModelScope.launch {
@@ -145,6 +168,62 @@ class IncidentViewModel
             } finally {
                 processCameraProvider.unbindAll()
             }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.Q)
+        fun capturePicture(context: Context) {
+            val tempFile = File.createTempFile("incident_", ".jpg", context.cacheDir)
+            val mediaStoreUtil = MediaStoreUtil(context)
+            val outputFileOptions =
+                ImageCapture
+                    .OutputFileOptions
+                    .Builder(tempFile)
+                    .build()
+            val executor = ContextCompat.getMainExecutor(context)
+
+            imageCapture.takePicture(
+                outputFileOptions,
+                executor,
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(p0: ImageCapture.OutputFileResults) {
+                        viewModelScope.launch {
+                            try {
+                                val bitMap =
+                                    android
+                                        .graphics.BitmapFactory
+                                        .decodeFile(tempFile.absolutePath)
+                                if (bitMap == null) {
+                                    _snackbarEvents.send(SnackbarEvent("Error saving Image"))
+                                    return@launch
+                                }
+                                mediaStoreUtil.saveImage(bitMap)
+                                when (tempFile.delete()) {
+                                    true -> {
+                                        _snackbarEvents.send(
+                                            SnackbarEvent("Image successfully captured!!"),
+                                        )
+                                    }
+
+                                    false -> {
+                                        _snackbarEvents.send(SnackbarEvent("Error saving image: Please try again"))
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                _snackbarEvents.send(SnackbarEvent("Error saving image: ${e.message}"))
+                                tempFile.delete()
+                            }
+                        }
+                    }
+
+                    override fun onError(p0: ImageCaptureException) {
+                        viewModelScope.launch {
+                            _snackbarEvents.send(
+                                SnackbarEvent("Image Capture failed"),
+                            )
+                        }
+                    }
+                },
+            )
         }
 
         fun add(

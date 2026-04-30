@@ -1,5 +1,7 @@
-package com.whoismacy.android.incidentincidence.model
+package com.whoismacy.android.incidentincidence.repository
 
+import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.model.IncidentDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
