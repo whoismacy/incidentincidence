@@ -1,5 +1,12 @@
 package com.whoismacy.android.incidentincidence.viewmodel
 
+import android.content.Context
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceRequest
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.whoismacy.android.incidentincidence.model.Incident
@@ -7,9 +14,11 @@ import com.whoismacy.android.incidentincidence.model.IncidentRepository
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -42,6 +51,16 @@ class IncidentViewModel
 
         private val _isLoading = MutableStateFlow(true)
         val isLoading = _isLoading.asStateFlow()
+
+        private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
+        val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest.asStateFlow()
+
+        private val previewUseCase =
+            Preview.Builder().build().apply {
+                setSurfaceProvider { newSurfaceRequest ->
+                    _surfaceRequest.update { newSurfaceRequest }
+                }
+            }
 
         init {
             viewModelScope.launch {
@@ -109,6 +128,24 @@ class IncidentViewModel
                 SortValues.NEWEST -> incidents.sortedBy { it.dateAdded }.reversed()
                 SortValues.OLDEST -> incidents.sortedBy { it.dateAdded }
             }
+
+        suspend fun bindToCamera(
+            appContext: Context,
+            lifecycleOwner: LifecycleOwner,
+        ) {
+            val processCameraProvider = ProcessCameraProvider.awaitInstance(appContext)
+            processCameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                previewUseCase,
+            )
+
+            try {
+                awaitCancellation()
+            } finally {
+                processCameraProvider.unbindAll()
+            }
+        }
 
         fun add(
             content: String,

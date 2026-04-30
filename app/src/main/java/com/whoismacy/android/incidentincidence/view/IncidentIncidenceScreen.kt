@@ -21,10 +21,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -37,6 +39,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.viewScreens.HomeScreen
 import com.whoismacy.android.incidentincidence.viewScreens.SolvedIncidentsScreen
@@ -66,6 +69,11 @@ fun IncidentIncidenceScreen(
     val displayFilterState by viewModel
         .displayFilterState
         .collectAsStateWithLifecycle()
+
+    val LocalNavigation =
+        staticCompositionLocalOf<NavController> {
+            error("No NavControllerProvided")
+        }
 
     val coroutineScope = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -181,11 +189,11 @@ fun IncidentIncidenceScreen(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable<HomeRoute> {
-                HomeScreen(incidences = displayData)
+                HomeScreen(incidences = displayData, navController = rootNavController)
             }
 
             composable<SolvedIncidentsRoute> {
-                SolvedIncidentsScreen(incidences = displayData)
+                SolvedIncidentsScreen(incidences = displayData, navController = rootNavController)
             }
 
             composable<TrendRoute> {

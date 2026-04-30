@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.view.EmptyStateIndicator
@@ -33,6 +34,7 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun DisplayList(
+    navController: NavController,
     listContent: List<Incident>,
     modifier: Modifier = Modifier,
     viewModel: IncidentViewModel = hiltViewModel(),
@@ -82,6 +84,7 @@ fun DisplayList(
         ) {
             items(listContent) {
                 IncidentItem(
+                    navController,
                     isSelected = selectedIncidentId == it.id,
                     changeDisplayVisibility = changeDisplayVisibility,
                     incident = it,
