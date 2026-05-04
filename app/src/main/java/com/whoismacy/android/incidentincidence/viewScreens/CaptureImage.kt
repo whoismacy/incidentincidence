@@ -1,5 +1,7 @@
 package com.whoismacy.android.incidentincidence.viewScreens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.camera.compose.CameraXViewfinder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +38,7 @@ import com.google.accompanist.permissions.shouldShowRationale
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureImage() {
@@ -66,6 +69,7 @@ fun CaptureImage() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun DisplayCamera(viewModel: IncidentViewModel = hiltViewModel()) {
     val context = LocalContext.current
@@ -85,7 +89,7 @@ fun DisplayCamera(viewModel: IncidentViewModel = hiltViewModel()) {
             Row(
                 modifier =
                     Modifier
-                        .height(96.dp)
+                        .height(128.dp)
                         .fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
@@ -97,6 +101,7 @@ fun DisplayCamera(viewModel: IncidentViewModel = hiltViewModel()) {
                         painter = painterResource(R.drawable.baseline_camera_alt_24),
                         contentDescription = null,
                         tint = Color.White,
+                        modifier = Modifier.size(36.dp),
                     )
                 }
             }

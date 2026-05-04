@@ -48,10 +48,10 @@ fun SingleIncidentMbs(
     onDismissRequest: () -> Unit,
     rootNavController: NavController,
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val viewModel = LocalIncidentViewModel.current
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,

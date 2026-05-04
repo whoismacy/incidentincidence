@@ -2,6 +2,8 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -50,7 +52,7 @@ class IncidentViewModel
     constructor(
         private val repository: IncidentRepository,
     ) : ViewModel() {
-        private val _snackbarEvents = Channel<SnackbarEvent>()
+        private val _snackbarEvents = Channel<SnackbarEvent>(capacity = Channel.BUFFERED)
         val snackbarEvents = _snackbarEvents.receiveAsFlow()
 
         private val _displayFilterState = MutableStateFlow(DisplayFilterState())
@@ -85,6 +87,7 @@ class IncidentViewModel
                 }.build()
 
         init {
+            Log.e("INCIDENTVIEWMODEL", "Created Instance:${this.hashCode()}")
             viewModelScope.launch {
                 repository.allIncidences.collect { incidents ->
                     val totalCount = incidents.count()
@@ -199,17 +202,15 @@ class IncidentViewModel
                                 mediaStoreUtil.saveImage(bitMap)
                                 when (tempFile.delete()) {
                                     true -> {
-                                        _snackbarEvents.send(
-                                            SnackbarEvent("Image successfully captured!!"),
-                                        )
+                                        Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
                                     }
 
                                     false -> {
-                                        _snackbarEvents.send(SnackbarEvent("Error saving image: Please try again"))
+                                        Toast.makeText(context, "Image creation failed!", Toast.LENGTH_LONG).show()
                                     }
                                 }
                             } catch (e: Exception) {
-                                _snackbarEvents.send(SnackbarEvent("Error saving image: ${e.message}"))
+                                Toast.makeText(context, "Image creation failed!: ${e.message}", Toast.LENGTH_LONG).show()
                                 tempFile.delete()
                             }
                         }
@@ -236,7 +237,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident added successfully",
-                            action = {},
                         ),
                     )
                 } catch (e: Exception) {
@@ -269,7 +269,6 @@ class IncidentViewModel
                     _snackbarEvents.send(
                         SnackbarEvent(
                             message = "Incident deleted",
-                            action = {},
                         ),
                     )
                 } catch (e: Exception) {
