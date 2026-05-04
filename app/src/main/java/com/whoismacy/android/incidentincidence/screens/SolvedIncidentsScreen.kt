@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.viewScreens
+package com.whoismacy.android.incidentincidence.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.view
+package com.whoismacy.android.incidentincidence.screens
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -26,7 +26,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,11 +39,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
-import com.whoismacy.android.incidentincidence.viewScreens.HomeScreen
-import com.whoismacy.android.incidentincidence.viewScreens.SolvedIncidentsScreen
-import com.whoismacy.android.incidentincidence.viewScreens.TrendScreen
+import com.whoismacy.android.incidentincidence.view.Fab
+import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -55,6 +52,11 @@ object SolvedIncidentsRoute
 
 @Serializable
 object TrendRoute
+
+@Serializable
+data class EditRoute(
+    val id: Int,
+)
 
 val LocalIncidentViewModel =
     staticCompositionLocalOf<IncidentViewModel> {

@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.screens.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 

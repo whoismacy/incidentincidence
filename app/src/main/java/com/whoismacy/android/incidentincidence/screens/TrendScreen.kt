@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.viewScreens
+package com.whoismacy.android.incidentincidence.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
 import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 

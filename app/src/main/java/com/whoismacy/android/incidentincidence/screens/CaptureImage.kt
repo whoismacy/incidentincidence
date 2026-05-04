@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.viewScreens
+package com.whoismacy.android.incidentincidence.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
