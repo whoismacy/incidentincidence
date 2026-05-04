@@ -6,7 +6,6 @@ import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
-import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.core.ImageCapture.FLASH_MODE_AUTO
 import androidx.camera.core.ImageCapture.OUTPUT_FORMAT_JPEG
 import androidx.camera.core.ImageCaptureException
@@ -76,7 +75,7 @@ class IncidentViewModel
                     }
                 }
 
-        private val imageCapture =
+        private val imageCaptureUseCase =
             ImageCapture
                 .Builder()
                 .apply {
@@ -161,6 +160,7 @@ class IncidentViewModel
                 lifecycleOwner,
                 CameraSelector.DEFAULT_BACK_CAMERA,
                 previewUseCase,
+                imageCaptureUseCase,
             )
 
             try {
@@ -181,7 +181,7 @@ class IncidentViewModel
                     .build()
             val executor = ContextCompat.getMainExecutor(context)
 
-            imageCapture.takePicture(
+            imageCaptureUseCase.takePicture(
                 outputFileOptions,
                 executor,
                 object : ImageCapture.OnImageSavedCallback {

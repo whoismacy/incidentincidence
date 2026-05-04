@@ -19,7 +19,8 @@ class MediaStoreUtil(
             val resolver = context.contentResolver
             val imageCollection =
                 MediaStore
-                    .Images.Media
+                    .Images
+                    .Media
                     .getContentUri(
                         MediaStore.VOLUME_EXTERNAL_PRIMARY,
                     )
