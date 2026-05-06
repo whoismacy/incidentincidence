@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
+import com.whoismacy.android.incidentincidence.routes.CreateIncidentRoute
+import com.whoismacy.android.incidentincidence.routes.IncidentIncidenceRoute
 
 @Composable
 fun Fab(rootNavController: NavController) {

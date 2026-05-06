@@ -44,25 +44,10 @@ import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.serialization.Serializable
 
-@Serializable
-object HomeRoute
-
-@Serializable
-object SolvedIncidentsRoute
-
-@Serializable
-object TrendRoute
-
-@Serializable
-data class EditRoute(
-    val id: Int,
-)
-
 val LocalIncidentViewModel =
     staticCompositionLocalOf<IncidentViewModel> {
         error("No IncidentViewModel provided")
     }
-
 private val enterAnimation = fadeIn(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + expandVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing))
 private val exitAnimation = fadeOut(tween(durationMillis = 800, easing = LinearOutSlowInEasing)) + shrinkVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing))
 
@@ -115,67 +100,7 @@ fun IncidentIncidenceScreen(
                 }
             },
             bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = currentDestination.contains("Home"),
-                        onClick = {
-                            navController.navigate(HomeRoute) {
-                                popUpTo(HomeRoute) {
-                                    saveState = true
-                                }
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.outline_free_breakfast_24),
-                                contentDescription = null,
-                            )
-                        },
-                        label = {
-                            Text("Home")
-                        },
-                    )
-
-                    NavigationBarItem(
-                        selected = currentDestination.contains("SolvedIncidents"),
-                        onClick = {
-                            navController.navigate(SolvedIncidentsRoute) {
-                                popUpTo(HomeRoute) {
-                                    saveState = true
-                                }
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.outline_star_shine_24),
-                                contentDescription = null,
-                            )
-                        },
-                        label = {
-                            Text("Solved")
-                        },
-                    )
-
-                    NavigationBarItem(
-                        selected = currentDestination.contains("Trend"),
-                        onClick = {
-                            navController.navigate(TrendRoute) {
-                                popUpTo(HomeRoute) {
-                                    saveState = true
-                                }
-                            }
-                        },
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.baseline_trending_up_24),
-                                contentDescription = null,
-                            )
-                        },
-                        label = {
-                            Text("Trend")
-                        },
-                    )
-                }
+                BottomNavigation(navController)
             },
             snackbarHost = {
                 SnackbarHost(snackBarHostState) { snackbarData ->
@@ -203,23 +128,75 @@ fun IncidentIncidenceScreen(
                 }
             },
         ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = HomeRoute,
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                composable<HomeRoute> {
-                    HomeScreen(incidences = displayData, navController = rootNavController)
-                }
-
-                composable<SolvedIncidentsRoute> {
-                    SolvedIncidentsScreen(incidences = displayData, navController = rootNavController)
-                }
-
-                composable<TrendRoute> {
-                    TrendScreen()
-                }
-            }
         }
+    }
+}
+
+@Composable
+fun BottomNavigation(
+    navController: NavController,
+) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination?.route ?: ""
+    NavigationBar {
+        NavigationBarItem(
+            selected = currentDestination.contains("Home"),
+            onClick = {
+                navController.navigate(HomeRoute) {
+                    popUpTo(HomeRoute) {
+                        saveState = true
+                    }
+                }
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.outline_free_breakfast_24),
+                    contentDescription = null,
+                )
+            },
+            label = {
+                Text("Home")
+            },
+        )
+
+        NavigationBarItem(
+            selected = currentDestination.contains("SolvedIncidents"),
+            onClick = {
+                navController.navigate(SolvedIncidentsRoute) {
+                    popUpTo(HomeRoute) {
+                        saveState = true
+                    }
+                }
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.outline_star_shine_24),
+                    contentDescription = null,
+                )
+            },
+            label = {
+                Text("Solved")
+            },
+        )
+
+        NavigationBarItem(
+            selected = currentDestination.contains("Trend"),
+            onClick = {
+                navController.navigate(TrendRoute) {
+                    popUpTo(HomeRoute) {
+                        saveState = true
+                    }
+                }
+            },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_trending_up_24),
+                    contentDescription = null,
+                )
+            },
+            label = {
+                Text("Trend")
+            },
+        )
     }
 }
