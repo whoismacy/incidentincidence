@@ -15,6 +15,6 @@ fun NavGraphBuilder.createIncidentDestination(onNavigateHome: () -> Unit) {
     }
 }
 
-fun NavController.navigateToIncidentDestination() {
+fun NavController.navigateToNewIncidentDestination() {
     navigate(CreateIncidentRoute)
 }

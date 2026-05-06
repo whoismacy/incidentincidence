@@ -3,15 +3,16 @@ package com.whoismacy.android.incidentincidence.routes
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.screens.SolvedIncidentsScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
 data object SolvedIncidentsRoute
 
-fun NavGraphBuilder.solvedIncidentDestination() {
+fun NavGraphBuilder.solvedIncidentDestination(incidents: List<Incident>) {
     composable<SolvedIncidentsRoute> {
-        SolvedIncidentsScreen()
+        SolvedIncidentsScreen(incidences = incidents)
     }
 }
 

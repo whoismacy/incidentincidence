@@ -26,7 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -86,7 +86,7 @@ fun AppRoot(
     val navBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStack?.destination?.route ?: ""
     val visible = !currentDestination.contains("TrendRoute")
-    val snackBarHostState = rememberSaveable { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
 
     CompositionLocalProvider(
         LocalIncidentViewModel provides viewModel,
@@ -137,10 +137,10 @@ fun AppRoot(
                 modifier = Modifier.padding(innerPadding),
             ) {
                 captureImageDestination()
-                createIncidentDestination({ navController.navigateToHomeDestination() })
+                createIncidentDestination { navController.navigateToHomeDestination() }
                 editDestination(incidents = displayData)
-                homeDestination()
-                solvedIncidentDestination()
+                homeDestination(incidents = displayData)
+                solvedIncidentDestination(incidents = displayData)
                 trendDestination()
             }
         }
