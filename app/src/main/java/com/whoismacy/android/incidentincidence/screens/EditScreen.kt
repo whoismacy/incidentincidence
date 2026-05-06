@@ -32,14 +32,9 @@ import com.whoismacy.android.incidentincidence.routes.CaptureImageRoute
 
 @Composable
 fun EditScreen(
+    id: Int,
     incidents: List<Incident>,
-    rootNavController: NavController,
 ) {
-    val id =
-        rootNavController
-            .currentBackStackEntry
-            ?.toRoute<EditRoute>()
-            ?.id ?: -1
     val incident = incidents[id]
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
     val changeContentValue: (String) -> Unit = { contentValue = it }

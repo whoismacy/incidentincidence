@@ -47,7 +47,7 @@ enum class SeverityOptions {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewIncident(
-    rootNavController: NavController,
+    onNavigateHome: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: IncidentViewModel = hiltViewModel<IncidentViewModel>(),
 ) {
@@ -102,7 +102,7 @@ fun NewIncident(
                 TextButton(
                     modifier = Modifier.padding(end = 8.dp),
                     onClick = {
-                        rootNavController.popBackStack()
+                        onNavigateHome()
                     },
                 ) {
                     Text("Cancel")
@@ -112,7 +112,7 @@ fun NewIncident(
                     onClick = {
                         if (incidentText.isNotBlank()) {
                             viewModel.add(incidentText, checkBoxState.name.lowercase())
-                            rootNavController.popBackStack()
+                            onNavigateHome()
                         }
                     },
                 ) {

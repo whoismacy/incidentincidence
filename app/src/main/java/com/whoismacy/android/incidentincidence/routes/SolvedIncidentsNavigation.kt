@@ -16,5 +16,10 @@ fun NavGraphBuilder.solvedIncidentDestination() {
 }
 
 fun NavController.navigateToSolvedIncidentDestination() {
-    navigate(SolvedIncidentsRoute)
+    navigate(SolvedIncidentsRoute) {
+        popUpTo(HomeRoute) {
+            inclusive = true
+            saveState = true
+        }
+    }
 }

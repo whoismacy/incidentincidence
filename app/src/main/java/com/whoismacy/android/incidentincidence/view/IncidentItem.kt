@@ -18,13 +18,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
 
 @Composable
 fun IncidentItem(
-    navController: NavController,
     isSelected: Boolean,
     changeDisplayVisibility: (Int?) -> Unit,
     incident: Incident,
@@ -34,7 +32,6 @@ fun IncidentItem(
         SingleIncidentMbs(
             incident,
             { changeDisplayVisibility(null) },
-            navController,
         )
     }
 

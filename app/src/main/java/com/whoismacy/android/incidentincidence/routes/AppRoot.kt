@@ -1,7 +1,6 @@
 package com.whoismacy.android.incidentincidence.routes
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -40,7 +39,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
-import com.whoismacy.android.incidentincidence.screens.BottomNavigation
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
@@ -48,6 +46,11 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 val LocalIncidentViewModel =
     staticCompositionLocalOf<IncidentViewModel> {
         error("No IncidentViewModel provided")
+    }
+
+val LocalNavController =
+    staticCompositionLocalOf<NavController> {
+        error("No NavController provided")
     }
 
 private val enterAnimation =
@@ -85,7 +88,10 @@ fun AppRoot(
     val visible = !currentDestination.contains("TrendRoute")
     val snackBarHostState = rememberSaveable { SnackbarHostState() }
 
-    CompositionLocalProvider(LocalIncidentViewModel provides viewModel) {
+    CompositionLocalProvider(
+        LocalIncidentViewModel provides viewModel,
+        LocalNavController provides navController,
+    ) {
         Scaffold(
             topBar = {
                 AnimatedVisibility(
@@ -131,8 +137,8 @@ fun AppRoot(
                 modifier = Modifier.padding(innerPadding),
             ) {
                 captureImageDestination()
-                createIncidentDestination()
-                editDestination()
+                createIncidentDestination({ navController.navigateToHomeDestination() })
+                editDestination(incidents = displayData)
                 homeDestination()
                 solvedIncidentDestination()
                 trendDestination()
@@ -142,7 +148,6 @@ fun AppRoot(
 
     LaunchedEffect(Unit) {
         viewModel.snackbarEvents.collect { event ->
-            Log.d("INCIDENTINCIDENCESCREEN", event.message)
             val result =
                 snackBarHostState.showSnackbar(
                     message = event.message,
@@ -167,11 +172,7 @@ fun BottomNavigation(
         NavigationBarItem(
             selected = currentDestination.contains("Home"),
             onClick = {
-                navController.navigate(HomeRoute) {
-                    popUpTo(HomeRoute) {
-                        saveState = true
-                    }
-                }
+                navController.navigateToHomeDestination()
             },
             icon = {
                 Icon(
@@ -186,13 +187,7 @@ fun BottomNavigation(
 
         NavigationBarItem(
             selected = currentDestination.contains("SolvedIncidents"),
-            onClick = {
-                navController.navigate(SolvedIncidentsRoute) {
-                    popUpTo(HomeRoute) {
-                        saveState = true
-                    }
-                }
-            },
+            onClick = { navController.navigateToSolvedIncidentDestination() },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.outline_star_shine_24),
@@ -206,13 +201,7 @@ fun BottomNavigation(
 
         NavigationBarItem(
             selected = currentDestination.contains("Trend"),
-            onClick = {
-                navController.navigate(TrendRoute) {
-                    popUpTo(HomeRoute) {
-                        saveState = true
-                    }
-                }
-            },
+            onClick = { navController.navigateToTrendDestination() },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.baseline_trending_up_24),

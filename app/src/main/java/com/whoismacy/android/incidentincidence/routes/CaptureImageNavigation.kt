@@ -18,6 +18,6 @@ fun NavGraphBuilder.captureImageDestination() {
     }
 }
 
-fun NavController.navigatToCaptureImage() {
+fun NavController.navigateToCaptureImage() {
     navigate(CaptureImageRoute)
 }

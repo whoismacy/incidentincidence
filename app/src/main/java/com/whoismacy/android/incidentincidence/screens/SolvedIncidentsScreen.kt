@@ -9,11 +9,9 @@ import com.whoismacy.android.incidentincidence.model.Incident
 fun SolvedIncidentsScreen(
     modifier: Modifier = Modifier,
     incidences: List<Incident> = emptyList(),
-    navController: NavController,
 ) {
     DisplayList(
-        navController,
-        incidences.filter { incident -> incident.resolved },
+        listContent = incidences.filter { incident -> incident.resolved },
         modifier,
     )
 }

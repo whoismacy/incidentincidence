@@ -38,9 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.routes.CaptureImageRoute
-import com.whoismacy.android.incidentincidence.routes.IncidentIncidenceRoute
-import com.whoismacy.android.incidentincidence.screens.LocalIncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.LocalNavController
+import com.whoismacy.android.incidentincidence.routes.navigateToEditDestination
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
@@ -49,12 +49,12 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 fun SingleIncidentMbs(
     incident: Incident,
     onDismissRequest: () -> Unit,
-    rootNavController: NavController,
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val viewModel = LocalIncidentViewModel.current
+    val navController = LocalNavController.current
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -111,7 +111,7 @@ fun SingleIncidentMbs(
                 viewModel = viewModel,
                 showDeleteDialog = showDeleteDialog,
                 controlDeleteDialog = { showDeleteDialog = it },
-                rootNavController = rootNavController,
+                navController = navController,
             )
         }
     }
@@ -144,7 +144,7 @@ fun ButtonGroup(
     viewModel: IncidentViewModel,
     showDeleteDialog: Boolean,
     controlDeleteDialog: (Boolean) -> Unit,
-    rootNavController: NavController,
+    navController: NavController,
 ) {
     val context = LocalContext.current
     Row(
@@ -197,34 +197,28 @@ fun ButtonGroup(
             Text("Share", style = MaterialTheme.typography.labelMedium)
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            FilledTonalButton(
-                onClick = {
-                    rootNavController.navigate(CaptureImageRoute) {
-                        popUpTo(IncidentIncidenceRoute) {
-                            saveState = true
-                        }
-                    }
-                },
-                colors =
-                    ButtonDefaults.filledTonalButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    ),
-            ) {
-                Icon(
-                    modifier = Modifier.size(18.dp),
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Edit incident",
-                )
-            }
-            Text("Edit", style = MaterialTheme.typography.labelMedium)
-        }
-
         if (!incident.resolved) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                FilledTonalButton(
+                    onClick = { navController.navigateToEditDestination(incident.id) },
+                    colors =
+                        ButtonDefaults.filledTonalButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        ),
+                ) {
+                    Icon(
+                        modifier = Modifier.size(18.dp),
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Edit incident",
+                    )
+                }
+                Text("Edit", style = MaterialTheme.typography.labelMedium)
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -16,5 +16,10 @@ fun NavGraphBuilder.homeDestination() {
 }
 
 fun NavController.navigateToHomeDestination() {
-    navigate(HomeRoute)
+    navigate(HomeRoute) {
+        popUpTo(HomeRoute) {
+            inclusive = true
+            saveState = true
+        }
+    }
 }

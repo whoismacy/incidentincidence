@@ -16,5 +16,10 @@ fun NavGraphBuilder.trendDestination() {
 }
 
 fun NavController.navigateToTrendDestination() {
-    navigate(TrendRoute)
+    navigate(TrendRoute) {
+        popUpTo(HomeRoute) {
+            inclusive = true
+            saveState = true
+        }
+    }
 }

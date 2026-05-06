@@ -9,9 +9,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 object CreateIncidentRoute
 
-fun NavGraphBuilder.createIncidentDestination() {
+fun NavGraphBuilder.createIncidentDestination(onNavigateHome: () -> Unit) {
     composable<CreateIncidentRoute> {
-        NewIncident()
+        NewIncident(onNavigateHome = onNavigateHome)
     }
 }
 
