@@ -2,6 +2,7 @@ package com.whoismacy.android.incidentincidence.routes
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.whoismacy.android.incidentincidence.screens.CaptureImage
@@ -15,4 +16,8 @@ fun NavGraphBuilder.captureImageDestination() {
     composable<CaptureImageRoute> {
         CaptureImage()
     }
+}
+
+fun NavController.navigatToCaptureImage() {
+    navigate(CaptureImageRoute)
 }

@@ -1,5 +1,6 @@
 package com.whoismacy.android.incidentincidence.routes
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.whoismacy.android.incidentincidence.view.NewIncident
@@ -12,4 +13,8 @@ fun NavGraphBuilder.createIncidentDestination() {
     composable<CreateIncidentRoute> {
         NewIncident()
     }
+}
+
+fun NavController.navigateToIncidentDestination() {
+    navigate(CreateIncidentRoute)
 }
