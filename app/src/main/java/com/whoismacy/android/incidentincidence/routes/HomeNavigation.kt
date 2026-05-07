@@ -24,9 +24,3 @@ fun NavController.navigateToHomeDestination() {
         }
     }
 }
-
-/*
-        TODO("fix the no incidents displaying in home and solved")
-        TODO("Change app's font: Poppins")
-        TODO("look into how to pass and receive parameters using NavGraphBuilder and NavController")
-*/
