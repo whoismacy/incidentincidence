@@ -1,9 +1,8 @@
-package com.whoismacy.android.incidentincidence.routes
+package com.whoismacy.android.incidentincidence.routes.mainapphost
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.screens.SolvedIncidentsScreen
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.routes
+package com.whoismacy.android.incidentincidence.routes.mainapphost
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -39,6 +39,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
+import com.whoismacy.android.incidentincidence.routes.extraroutes.captureImageDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.createIncidentDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.editDestination
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
@@ -71,7 +74,7 @@ private val exitAnimation =
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun AppRoot(
+fun MainAppHost(
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     val displayData by
@@ -136,12 +139,12 @@ fun AppRoot(
                 startDestination = HomeRoute,
                 modifier = Modifier.padding(innerPadding),
             ) {
-                captureImageDestination()
-                createIncidentDestination { navController.navigateToHomeDestination() }
-                editDestination(incidents = displayData)
                 homeDestination()
                 solvedIncidentDestination()
                 trendDestination()
+                createIncidentDestination { navController.navigateToHomeDestination() }
+                captureImageDestination()
+                editDestination(incidents = displayData)
             }
         }
     }

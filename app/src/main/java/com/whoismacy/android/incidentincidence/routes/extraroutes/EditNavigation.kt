@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.routes
+package com.whoismacy.android.incidentincidence.routes.extraroutes
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder

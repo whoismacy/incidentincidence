@@ -1,4 +1,4 @@
-package com.whoismacy.android.incidentincidence.routes
+package com.whoismacy.android.incidentincidence.routes.extraroutes
 
 import android.os.Build
 import androidx.annotation.RequiresApi

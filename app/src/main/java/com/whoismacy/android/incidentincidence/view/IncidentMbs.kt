@@ -38,9 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
-import com.whoismacy.android.incidentincidence.routes.LocalNavController
-import com.whoismacy.android.incidentincidence.routes.navigateToEditDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToEditDestination
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalNavController
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 

@@ -26,8 +26,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.routes.LocalNavController
-import com.whoismacy.android.incidentincidence.routes.navigateToCaptureImage
+import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToCaptureImage
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalNavController
 
 @Composable
 fun EditScreen(
