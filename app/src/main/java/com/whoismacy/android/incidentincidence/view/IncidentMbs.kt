@@ -38,9 +38,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.routes.extraroutes.LocalExtraNavController
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToEditDestination
 import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
-import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalNavController
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
@@ -54,7 +54,7 @@ fun SingleIncidentMbs(
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val viewModel = LocalIncidentViewModel.current
-    val navController = LocalNavController.current
+    val navController = LocalExtraNavController.current
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,

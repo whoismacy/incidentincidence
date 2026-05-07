@@ -36,24 +36,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
-import com.whoismacy.android.incidentincidence.routes.extraroutes.captureImageDestination
-import com.whoismacy.android.incidentincidence.routes.extraroutes.createIncidentDestination
-import com.whoismacy.android.incidentincidence.routes.extraroutes.editDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.CreateIncidentRoute
+import com.whoismacy.android.incidentincidence.routes.extraroutes.ExtraHost
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 val LocalIncidentViewModel =
     staticCompositionLocalOf<IncidentViewModel> {
-        error("No IncidentViewModel provided")
-    }
-
-val LocalNavController =
-    staticCompositionLocalOf<NavController> {
-        error("No NavController provided")
+        error("NO VIEWMODEL PROVIDED!!")
     }
 
 private val enterAnimation =
@@ -77,10 +72,6 @@ private val exitAnimation =
 fun MainAppHost(
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
-    val displayData by
-        viewModel
-            .displayIncidences
-            .collectAsStateWithLifecycle()
     val displayFilterState by viewModel
         .displayFilterState
         .collectAsStateWithLifecycle()
@@ -93,7 +84,6 @@ fun MainAppHost(
 
     CompositionLocalProvider(
         LocalIncidentViewModel provides viewModel,
-        LocalNavController provides navController,
     ) {
         Scaffold(
             topBar = {
@@ -130,7 +120,7 @@ fun MainAppHost(
                     enter = enterAnimation,
                     exit = exitAnimation,
                 ) {
-                    Fab(navController)
+                    Fab()
                 }
             },
         ) { innerPadding ->
@@ -142,9 +132,12 @@ fun MainAppHost(
                 homeDestination()
                 solvedIncidentDestination()
                 trendDestination()
-                createIncidentDestination { navController.navigateToHomeDestination() }
-                captureImageDestination()
-                editDestination(incidents = displayData)
+                composable<CreateIncidentRoute> {
+                    ExtraHost(
+                        onReturnToMain = { navController.navigateToHomeDestination() },
+                        viewModel = viewModel,
+                    )
+                }
             }
         }
     }

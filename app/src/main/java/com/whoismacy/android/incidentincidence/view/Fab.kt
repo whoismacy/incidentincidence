@@ -6,15 +6,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
+import com.whoismacy.android.incidentincidence.routes.extraroutes.LocalExtraNavController
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
 
 @Composable
-fun Fab(navController: NavController) {
+fun Fab() {
+    val extraNavController = LocalExtraNavController.current
     ExtendedFloatingActionButton(
         onClick = {
-            navController
+            extraNavController
                 .navigateToNewIncidentDestination()
         },
         icon = {

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="/ExtraNavHost (snapshot).kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="/ExtraNavHost (snapshot).kt" />
+              <option name="originalContent" value="package com.whoismacy.android.incidentincidence.routes.extraroutes&#10;&#10;import androidx.compose.runtime.Composable&#10;import androidx.navigation.compose.NavHost&#10;import androidx.navigation.compose.rememberNavController&#10;&#10;@Composable&#10;fun ExtraHost() {&#10;    val extraNavHost = rememberNavController()&#10;    NavHost(&#10;        navController = extraNavHost,&#10;        startDestination = null,&#10;    ) {&#10;    }&#10;}&#10;" />
+              <option name="updatedContent" value="package com.whoismacy.android.incidentincidence.routes.extraroutes&#10;&#10;import androidx.compose.runtime.Composable&#10;import androidx.compose.runtime.CompositionLocalProvider&#10;import androidx.compose.runtime.staticCompositionLocalOf&#10;import androidx.hilt.navigation.compose.hiltViewModel&#10;import androidx.lifecycle.compose.collectAsStateWithLifecycle&#10;import androidx.navigation.NavController&#10;import androidx.navigation.compose.NavHost&#10;import androidx.navigation.compose.rememberNavController&#10;import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel&#10;import kotlinx.serialization.Serializable&#10;&#10;@Serializable&#10;data object CreateIncidentRoute&#10;&#10;@Serializable&#10;data object CaptureImageRoute&#10;&#10;@Serializable&#10;data class EditRoute(val id: Int)&#10;&#10;val LocalExtraNavController =&#10;    staticCompositionLocalOf&lt;NavController&gt; {&#10;        error(&quot;No Extra NavController provided&quot;)&#10;    }&#10;&#10;@Composable&#10;fun ExtraHost(&#10;    onReturnToMain: () -&gt; Unit,&#10;    viewModel: IncidentViewModel = hiltViewModel(),&#10;) {&#10;    val displayData by viewModel&#10;        .displayIncidences&#10;        .collectAsStateWithLifecycle()&#10;&#10;    val extraNavController = rememberNavController()&#10;&#10;    CompositionLocalProvider(LocalExtraNavController provides extraNavController) {&#10;        NavHost(&#10;            navController = extraNavController,&#10;            startDestination = CreateIncidentRoute,&#10;        ) {&#10;            createIncidentDestination(onNavigateBack = onReturnToMain)&#10;            captureImageDestination()&#10;            editDestination(incidents = displayData)&#10;        }&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

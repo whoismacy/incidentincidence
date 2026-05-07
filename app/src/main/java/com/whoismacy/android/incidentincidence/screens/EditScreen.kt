@@ -26,8 +26,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.routes.extraroutes.LocalExtraNavController
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToCaptureImage
-import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalNavController
 
 @Composable
 fun EditScreen(
@@ -37,7 +37,7 @@ fun EditScreen(
     val incident = incidents[id]
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
     val changeContentValue: (String) -> Unit = { contentValue = it }
-    val navController = LocalNavController.current
+    val extraNavController = LocalExtraNavController.current
 
     Box(
         modifier =
@@ -76,7 +76,7 @@ fun EditScreen(
 
             TextButton(
                 onClick = {
-                    navController.navigateToCaptureImage()
+                    extraNavController.navigateToCaptureImage()
                 },
             ) {
                 Text("Add Image")
