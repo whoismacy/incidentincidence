@@ -5,13 +5,14 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
+    val viewModel = LocalIncidentViewModel.current
     val incidences =
         viewModel
             .displayIncidences

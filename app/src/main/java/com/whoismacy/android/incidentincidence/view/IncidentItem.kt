@@ -29,7 +29,7 @@ fun IncidentItem(
     modifier: Modifier = Modifier,
 ) {
     if (isSelected) {
-        SingleIncidentMbs(
+        IncidentMbs(
             incident,
             { changeDisplayVisibility(null) },
         )

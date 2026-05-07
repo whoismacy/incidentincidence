@@ -2,17 +2,14 @@ package com.whoismacy.android.incidentincidence.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
 
 @Composable
 fun SolvedIncidentsScreen(
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
+    val viewModel = LocalIncidentViewModel.current
     val incidences =
         viewModel
             .displayIncidences

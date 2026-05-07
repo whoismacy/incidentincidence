@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.whoismacy.android.incidentincidence.routes.RootNavigation
 import com.whoismacy.android.incidentincidence.routes.mainapphost.MainAppHost
 import com.whoismacy.android.incidentincidence.ui.theme.IncidentIncidenceTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             IncidentIncidenceTheme {
-                MainAppHost()
+                RootNavigation()
             }
         }
     }

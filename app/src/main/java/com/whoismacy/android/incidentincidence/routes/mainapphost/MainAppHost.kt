@@ -1,14 +1,5 @@
 package com.whoismacy.android.incidentincidence.routes.mainapphost
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -36,12 +27,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.whoismacy.android.incidentincidence.R
-import com.whoismacy.android.incidentincidence.routes.extraroutes.CreateIncidentRoute
-import com.whoismacy.android.incidentincidence.routes.extraroutes.ExtraHost
+import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
@@ -51,52 +40,52 @@ val LocalIncidentViewModel =
         error("NO VIEWMODEL PROVIDED!!")
     }
 
-private val enterAnimation =
-    fadeIn(
-        tween(
-            durationMillis = 800,
-            easing = LinearOutSlowInEasing,
-        ),
-    ) + expandVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing))
-
-private val exitAnimation =
-    fadeOut(
-        tween(
-            durationMillis = 800,
-            easing = LinearOutSlowInEasing,
-        ),
-    ) + shrinkVertically(tween(durationMillis = 800, easing = LinearOutSlowInEasing))
-
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainAppHost(
+    rootNavController: NavController,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     val displayFilterState by viewModel
         .displayFilterState
         .collectAsStateWithLifecycle()
 
-    val navController = rememberNavController()
-    val navBackStack by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStack?.destination?.route ?: ""
-    val visible = !currentDestination.contains("TrendRoute")
     val snackBarHostState = remember { SnackbarHostState() }
+
+    val mainAppNavController = rememberNavController()
+    val currentDestination =
+        mainAppNavController
+            .currentBackStackEntryAsState()
+            .value
+            ?.destination
+            ?.route ?: ""
+
+    val onNavigateHome = {
+        mainAppNavController
+            .navigateToHomeDestination()
+    }
+    val onNavigateSolved = {
+        mainAppNavController
+            .navigateToSolvedIncidentDestination()
+    }
+    val onNavigateTrend = {
+        rootNavController
+            .navigateToTrendDestination()
+    }
 
     CompositionLocalProvider(
         LocalIncidentViewModel provides viewModel,
     ) {
         Scaffold(
             topBar = {
-                AnimatedVisibility(
-                    visible = visible,
-                    enter = enterAnimation,
-                    exit = exitAnimation,
-                ) {
-                    SearchBar(displayFilterState.searchQuery)
-                }
+                SearchBar(displayFilterState.searchQuery)
             },
             bottomBar = {
-                BottomNavigation(navController)
+                BottomNavigation(
+                    onNavigateHome = onNavigateHome,
+                    onNavigateSolved = onNavigateSolved,
+                    onNavigateTrend = onNavigateTrend,
+                    currentDestination = currentDestination,
+                )
             },
             snackbarHost = {
                 SnackbarHost(snackBarHostState) { snackbarData ->
@@ -115,29 +104,16 @@ fun MainAppHost(
                 }
             },
             floatingActionButton = {
-                AnimatedVisibility(
-                    visible = visible,
-                    enter = enterAnimation,
-                    exit = exitAnimation,
-                ) {
-                    Fab()
-                }
+                Fab { rootNavController.navigateToNewIncidentDestination() }
             },
         ) { innerPadding ->
             NavHost(
-                navController = navController,
+                navController = mainAppNavController,
                 startDestination = HomeRoute,
                 modifier = Modifier.padding(innerPadding),
             ) {
                 homeDestination()
                 solvedIncidentDestination()
-                trendDestination()
-                composable<CreateIncidentRoute> {
-                    ExtraHost(
-                        onReturnToMain = { navController.navigateToHomeDestination() },
-                        viewModel = viewModel,
-                    )
-                }
             }
         }
     }
@@ -160,15 +136,16 @@ fun MainAppHost(
 
 @Composable
 fun BottomNavigation(
-    navController: NavController,
+    onNavigateHome: () -> Unit,
+    onNavigateSolved: () -> Unit,
+    onNavigateTrend: () -> Unit,
+    currentDestination: String,
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination?.route ?: ""
     NavigationBar {
         NavigationBarItem(
             selected = currentDestination.contains("Home"),
             onClick = {
-                navController.navigateToHomeDestination()
+                onNavigateHome()
             },
             icon = {
                 Icon(
@@ -183,7 +160,7 @@ fun BottomNavigation(
 
         NavigationBarItem(
             selected = currentDestination.contains("SolvedIncidents"),
-            onClick = { navController.navigateToSolvedIncidentDestination() },
+            onClick = { onNavigateSolved() },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.outline_star_shine_24),
@@ -197,7 +174,7 @@ fun BottomNavigation(
 
         NavigationBarItem(
             selected = currentDestination.contains("Trend"),
-            onClick = { navController.navigateToTrendDestination() },
+            onClick = { onNavigateTrend() },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.baseline_trending_up_24),

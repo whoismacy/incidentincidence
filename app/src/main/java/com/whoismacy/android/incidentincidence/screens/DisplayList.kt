@@ -23,20 +23,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.view.EmptyStateIndicator
 import com.whoismacy.android.incidentincidence.view.IncidentItem
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun DisplayList(
     listContent: List<Incident>,
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
+    val viewModel = LocalIncidentViewModel.current
     var selectedIncidentId by remember { mutableStateOf<Int?>(null) }
     val changeDisplayVisibility: (Int?) -> Unit = { id: Int? -> selectedIncidentId = id }
     val isLoading = viewModel.isLoading.collectAsStateWithLifecycle().value

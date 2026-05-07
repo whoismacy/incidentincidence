@@ -35,10 +35,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.routes.extraroutes.LocalExtraNavController
+import com.whoismacy.android.incidentincidence.routes.LocalRootNavController
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToEditDestination
 import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.utils.dateToHumanReadable
@@ -46,15 +45,19 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SingleIncidentMbs(
+fun IncidentMbs(
     incident: Incident,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
     val viewModel = LocalIncidentViewModel.current
-    val navController = LocalExtraNavController.current
+    val navController = LocalRootNavController.current
+    val onNavigateEditScreen: (Int) -> Unit = {
+        navController.navigateToEditDestination(it)
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
@@ -111,7 +114,7 @@ fun SingleIncidentMbs(
                 viewModel = viewModel,
                 showDeleteDialog = showDeleteDialog,
                 controlDeleteDialog = { showDeleteDialog = it },
-                navController = navController,
+                onNavigateEditScreen = onNavigateEditScreen,
             )
         }
     }
@@ -144,7 +147,7 @@ fun ButtonGroup(
     viewModel: IncidentViewModel,
     showDeleteDialog: Boolean,
     controlDeleteDialog: (Boolean) -> Unit,
-    navController: NavController,
+    onNavigateEditScreen: (Int) -> Unit,
 ) {
     val context = LocalContext.current
     Row(
@@ -203,7 +206,9 @@ fun ButtonGroup(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 FilledTonalButton(
-                    onClick = { navController.navigateToEditDestination(incident.id) },
+                    onClick = {
+                        onNavigateEditScreen(incident.id)
+                    },
                     colors =
                         ButtonDefaults.filledTonalButtonColors(
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
