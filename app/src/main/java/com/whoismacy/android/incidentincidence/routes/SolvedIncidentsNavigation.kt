@@ -10,9 +10,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object SolvedIncidentsRoute
 
-fun NavGraphBuilder.solvedIncidentDestination(incidents: List<Incident>) {
+fun NavGraphBuilder.solvedIncidentDestination() {
     composable<SolvedIncidentsRoute> {
-        SolvedIncidentsScreen(incidences = incidents)
+        SolvedIncidentsScreen()
     }
 }
 

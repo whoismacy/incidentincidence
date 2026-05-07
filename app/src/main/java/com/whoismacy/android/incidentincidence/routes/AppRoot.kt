@@ -139,8 +139,8 @@ fun AppRoot(
                 captureImageDestination()
                 createIncidentDestination { navController.navigateToHomeDestination() }
                 editDestination(incidents = displayData)
-                homeDestination(incidents = displayData)
-                solvedIncidentDestination(incidents = displayData)
+                homeDestination()
+                solvedIncidentDestination()
                 trendDestination()
             }
         }
