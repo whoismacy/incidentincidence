@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,7 +35,7 @@ fun EditScreen(
     incidents: List<Incident>,
     onNavigateCaptureImage: () -> Unit,
 ) {
-    val incident = incidents[id]
+    val incident = incidents.first { it.id == id }
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
     val changeContentValue: (String) -> Unit = { contentValue = it }
 
@@ -69,6 +71,12 @@ fun EditScreen(
                 singleLine = true,
                 maxLines = 10,
                 shape = MaterialTheme.shapes.large,
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                    ),
                 modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
             )
 

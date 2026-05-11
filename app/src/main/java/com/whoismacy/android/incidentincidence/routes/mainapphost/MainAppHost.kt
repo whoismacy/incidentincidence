@@ -20,12 +20,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
 import com.whoismacy.android.incidentincidence.screens.HomeScreen
 import com.whoismacy.android.incidentincidence.screens.SolvedIncidentsScreen
 import com.whoismacy.android.incidentincidence.view.BottomNavigation
@@ -40,7 +38,8 @@ val LocalIncidentViewModel =
 
 @Composable
 fun MainAppHost(
-    rootNavController: NavController,
+    onNavigateNewIncidentScreen: () -> Unit,
+    onNavigateTrendScreen: () -> Unit,
     viewModel: IncidentViewModel = hiltViewModel(),
 ) {
     val displayFilterState by viewModel
@@ -48,8 +47,8 @@ fun MainAppHost(
         .collectAsStateWithLifecycle()
 
     val snackBarHostState = remember { SnackbarHostState() }
-
     val mainAppNavController = rememberNavController()
+
     val currentDestination =
         mainAppNavController
             .currentBackStackEntryAsState()
@@ -65,10 +64,6 @@ fun MainAppHost(
         mainAppNavController
             .navigateToSolvedIncidentDestination()
     }
-    val onNavigateTrend = {
-        rootNavController
-            .navigateToTrendDestination()
-    }
 
     CompositionLocalProvider(
         LocalIncidentViewModel provides viewModel,
@@ -81,7 +76,7 @@ fun MainAppHost(
                 BottomNavigation(
                     onNavigateHome = onNavigateHome,
                     onNavigateSolved = onNavigateSolved,
-                    onNavigateTrend = onNavigateTrend,
+                    onNavigateTrend = onNavigateTrendScreen,
                     currentDestination = currentDestination,
                 )
             },
@@ -102,7 +97,7 @@ fun MainAppHost(
                 }
             },
             floatingActionButton = {
-                Fab { rootNavController.navigateToNewIncidentDestination() }
+                Fab { onNavigateNewIncidentScreen() }
             },
         ) { innerPadding ->
             NavHost(

@@ -19,9 +19,9 @@ import com.whoismacy.android.incidentincidence.routes.extraroutes.captureImageDe
 import com.whoismacy.android.incidentincidence.routes.extraroutes.createIncidentDestination
 import com.whoismacy.android.incidentincidence.routes.extraroutes.editDestination
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToCaptureImage
-import com.whoismacy.android.incidentincidence.routes.mainapphost.HomeRoute
+import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
 import com.whoismacy.android.incidentincidence.routes.mainapphost.MainAppHost
-import com.whoismacy.android.incidentincidence.routes.mainapphost.navigateToHomeDestination
+import com.whoismacy.android.incidentincidence.routes.mainapphost.navigateToTrendDestination
 import com.whoismacy.android.incidentincidence.routes.mainapphost.trendDestination
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.serialization.Serializable
@@ -58,7 +58,17 @@ fun RootNavigation(
             MainGraph,
         ) {
             composable<MainGraph> {
-                MainAppHost(rootNavController, viewModel)
+                MainAppHost(
+                    {
+                        rootNavController
+                            .navigateToNewIncidentDestination()
+                    },
+                    {
+                        rootNavController
+                            .navigateToTrendDestination()
+                    },
+                    viewModel,
+                )
             }
             extrasGraph(
                 rootNavController,
@@ -74,12 +84,12 @@ fun NavGraphBuilder.extrasGraph(
     displayData: List<Incident>,
 ) {
     navigation<ExtrasNavigation>(startDestination = CreateIncidentRoute) {
-        createIncidentDestination {
-            rootNavController
-                .navigateToHomeDestination()
-        }
         trendDestination()
         captureImageDestination()
+        createIncidentDestination {
+            rootNavController
+                .popBackStack()
+        }
         editDestination(
             displayData,
         ) { rootNavController.navigateToCaptureImage() }

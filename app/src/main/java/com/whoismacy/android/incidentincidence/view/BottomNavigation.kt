@@ -51,7 +51,11 @@ fun BottomNavigation(
             onClick = { onNavigateTrend() },
             icon = {
                 Icon(
-                    painter = painterResource(R.drawable.baseline_trending_up_24),
+                    painter =
+                        painterResource(
+                            R
+                                .drawable.baseline_trending_up_24,
+                        ),
                     contentDescription = null,
                 )
             },

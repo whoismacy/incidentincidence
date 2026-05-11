@@ -3,6 +3,7 @@ package com.whoismacy.android.incidentincidence.routes.mainapphost
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.whoismacy.android.incidentincidence.routes.MainGraph
 import com.whoismacy.android.incidentincidence.screens.TrendScreen
 import kotlinx.serialization.Serializable
 
@@ -17,8 +18,7 @@ fun NavGraphBuilder.trendDestination() {
 
 fun NavController.navigateToTrendDestination() {
     navigate(TrendRoute) {
-        popUpTo(HomeRoute) {
-            inclusive = true
+        popUpTo(MainGraph) {
             saveState = true
         }
     }
