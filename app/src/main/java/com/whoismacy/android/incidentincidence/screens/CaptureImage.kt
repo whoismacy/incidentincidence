@@ -41,10 +41,12 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CaptureImage() {
+fun CaptureImage(
+    onNavigateBack: () -> Unit,
+) {
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     if (cameraPermissionState.status.isGranted) {
-        DisplayCamera()
+        DisplayCamera(onNavigateBack)
     } else {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -71,7 +73,10 @@ fun CaptureImage() {
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
-fun DisplayCamera(viewModel: IncidentViewModel = hiltViewModel()) {
+fun DisplayCamera(
+    onNavigateBack: () -> Unit,
+    viewModel: IncidentViewModel = hiltViewModel(),
+) {
     val context = LocalContext.current
     Box(
         modifier =
@@ -95,7 +100,7 @@ fun DisplayCamera(viewModel: IncidentViewModel = hiltViewModel()) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = {
-                    viewModel.capturePicture(context)
+                    viewModel.capturePicture(context, onNavigateBack)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_camera_alt_24),

@@ -172,7 +172,10 @@ class IncidentViewModel
         }
 
         @RequiresApi(Build.VERSION_CODES.Q)
-        fun capturePicture(context: Context) {
+        fun capturePicture(
+            context: Context,
+            onNavigateBack: () -> Unit,
+        ) {
             val tempFile = File.createTempFile("incident_", ".jpg", context.cacheDir)
             val mediaStoreUtil = MediaStoreUtil(context)
             val outputFileOptions =
@@ -201,6 +204,7 @@ class IncidentViewModel
                                 when (tempFile.delete()) {
                                     true -> {
                                         Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
+                                        onNavigateBack()
                                     }
 
                                     false -> {

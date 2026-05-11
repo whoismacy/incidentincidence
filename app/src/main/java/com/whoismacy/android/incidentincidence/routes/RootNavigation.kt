@@ -20,9 +20,9 @@ import com.whoismacy.android.incidentincidence.routes.extraroutes.createIncident
 import com.whoismacy.android.incidentincidence.routes.extraroutes.editDestination
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToCaptureImage
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToTrendDestination
+import com.whoismacy.android.incidentincidence.routes.extraroutes.trendDestination
 import com.whoismacy.android.incidentincidence.routes.mainapphost.MainAppHost
-import com.whoismacy.android.incidentincidence.routes.mainapphost.navigateToTrendDestination
-import com.whoismacy.android.incidentincidence.routes.mainapphost.trendDestination
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.serialization.Serializable
 
@@ -87,7 +87,7 @@ fun NavGraphBuilder.extrasGraph(
 ) {
     navigation<ExtrasNavigation>(startDestination = CreateIncidentRoute) {
         trendDestination()
-        captureImageDestination()
+        captureImageDestination { rootNavController.popBackStack() }
         createIncidentDestination(onNavigateHome = {
             rootNavController
                 .popBackStack()

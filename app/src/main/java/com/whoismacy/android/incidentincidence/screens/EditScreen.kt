@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,67 +44,72 @@ fun EditScreen(
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
     val changeContentValue: (String) -> Unit = { contentValue = it }
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-        contentAlignment = Alignment.Center,
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        contentColor = contentColorFor(backgroundColor = MaterialTheme.colorScheme.background),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                "Incident #${incident.id}",
-                style = MaterialTheme.typography.titleMedium,
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-            )
-
-            TextField(
-                value = contentValue,
-                onValueChange = { changeContentValue(it) },
-                label = {
-                    Text("Edit Incident #${incident.id}")
-                },
-                keyboardOptions =
-                    KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        autoCorrectEnabled = true,
-                    ),
-                singleLine = true,
-                maxLines = 10,
-                shape = MaterialTheme.shapes.large,
-                colors =
-                    TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                    ),
-                modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
-            )
-
-            TextButton(
-                onClick = {
-                    onNavigateCaptureImage()
-                },
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Text("Add Image")
-            }
+                Text(
+                    "Incident #${incident.id}",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                )
 
-            Spacer(Modifier.height(16.dp))
+                TextField(
+                    value = contentValue,
+                    onValueChange = { changeContentValue(it) },
+                    label = {
+                        Text("Edit Incident #${incident.id}")
+                    },
+                    keyboardOptions =
+                        KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            autoCorrectEnabled = true,
+                        ),
+                    singleLine = true,
+                    maxLines = 10,
+                    shape = MaterialTheme.shapes.large,
+                    colors =
+                        TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent,
+                        ),
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 120.dp),
+                )
 
-            Button(
-                enabled = contentValue != incident.content,
-                onClick = {
-                    if (contentValue != incident.content) {
-                        viewModel.updateIncidentContent(id = id, content = contentValue)
-                        onNavigateHome()
-                    }
-                },
-            ) {
-                Text("Save changes")
+                TextButton(
+                    onClick = {
+                        onNavigateCaptureImage()
+                    },
+                ) {
+                    Text("Add Image")
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                Button(
+                    enabled = contentValue != incident.content,
+                    onClick = {
+                        if (contentValue != incident.content) {
+                            viewModel.updateIncidentContent(id = id, content = contentValue)
+                            onNavigateHome()
+                        }
+                    },
+                ) {
+                    Text("Save changes")
+                }
             }
         }
     }

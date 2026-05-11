@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
 data object CaptureImageRoute
 
 @RequiresApi(Build.VERSION_CODES.Q)
-fun NavGraphBuilder.captureImageDestination() {
+fun NavGraphBuilder.captureImageDestination(onNavigateBack: () -> Unit) {
     composable<CaptureImageRoute> {
-        CaptureImage()
+        CaptureImage(onNavigateBack = onNavigateBack)
     }
 }
 
