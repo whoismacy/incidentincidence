@@ -70,7 +70,7 @@ fun MainAppHost(
     ) {
         Scaffold(
             topBar = {
-                SearchBar(displayFilterState.searchQuery)
+                SearchBar(displayFilterState.searchQuery, viewModel)
             },
             bottomBar = {
                 BottomNavigation(

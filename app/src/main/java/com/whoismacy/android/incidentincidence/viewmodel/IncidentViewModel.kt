@@ -87,7 +87,6 @@ class IncidentViewModel
                 }.build()
 
         init {
-            Log.e("INCIDENTVIEWMODEL", "Created Instance:${this.hashCode()}")
             viewModelScope.launch {
                 repository.allIncidences.collect { incidents ->
                     val totalCount = incidents.count()

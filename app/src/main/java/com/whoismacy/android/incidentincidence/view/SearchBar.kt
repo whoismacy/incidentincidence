@@ -110,6 +110,6 @@ fun SearchBar(
     }
 
     if (showSortFilterModal) {
-        SortFilterComponent({ changeSortFilterState(false) })
+        SortFilterComponent({ changeSortFilterState(false) }, viewModel = viewModel)
     }
 }
