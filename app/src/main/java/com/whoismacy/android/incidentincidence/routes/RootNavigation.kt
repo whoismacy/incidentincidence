@@ -88,10 +88,10 @@ fun NavGraphBuilder.extrasGraph(
     navigation<ExtrasNavigation>(startDestination = CreateIncidentRoute) {
         trendDestination()
         captureImageDestination()
-        createIncidentDestination {
+        createIncidentDestination(onNavigateHome = {
             rootNavController
                 .popBackStack()
-        }
+        }, viewModel = viewModel)
         editDestination(
             incidents = displayData,
             viewModel = viewModel,

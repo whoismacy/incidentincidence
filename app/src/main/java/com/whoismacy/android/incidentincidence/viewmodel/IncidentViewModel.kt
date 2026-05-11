@@ -2,7 +2,6 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
@@ -235,7 +234,7 @@ class IncidentViewModel
                     repository.add(content, severity)
                     _snackbarEvents.send(
                         SnackbarEvent(
-                            message = "Incident added successfully",
+                            message = "Incident created successfully 🎉",
                         ),
                     )
                 } catch (e: Exception) {
@@ -267,7 +266,7 @@ class IncidentViewModel
                     repository.deleteIncident(id)
                     _snackbarEvents.send(
                         SnackbarEvent(
-                            message = "Incident deleted",
+                            message = "Incident deleted ❌",
                         ),
                     )
                 } catch (e: Exception) {
