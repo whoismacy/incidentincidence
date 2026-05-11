@@ -73,6 +73,7 @@ fun RootNavigation(
             extrasGraph(
                 rootNavController,
                 displayData,
+                viewModel,
             )
         }
     }
@@ -82,6 +83,7 @@ fun RootNavigation(
 fun NavGraphBuilder.extrasGraph(
     rootNavController: NavController,
     displayData: List<Incident>,
+    viewModel: IncidentViewModel,
 ) {
     navigation<ExtrasNavigation>(startDestination = CreateIncidentRoute) {
         trendDestination()
@@ -91,7 +93,10 @@ fun NavGraphBuilder.extrasGraph(
                 .popBackStack()
         }
         editDestination(
-            displayData,
-        ) { rootNavController.navigateToCaptureImage() }
+            incidents = displayData,
+            viewModel = viewModel,
+            onNavigateCaptureImage = { rootNavController.navigateToCaptureImage() },
+            onNavigateHome = { rootNavController.popBackStack() },
+        )
     }
 }

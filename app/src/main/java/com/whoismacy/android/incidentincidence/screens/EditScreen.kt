@@ -28,12 +28,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun EditScreen(
     id: Int,
     incidents: List<Incident>,
     onNavigateCaptureImage: () -> Unit,
+    onNavigateHome: () -> Unit,
+    viewModel: IncidentViewModel,
 ) {
     val incident = incidents.first { it.id == id }
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
@@ -91,7 +94,13 @@ fun EditScreen(
             Spacer(Modifier.height(16.dp))
 
             Button(
-                onClick = {},
+                enabled = contentValue != incident.content,
+                onClick = {
+                    if (contentValue != incident.content) {
+                        viewModel.updateIncidentContent(id = id, content = contentValue)
+                        onNavigateHome()
+                    }
+                },
             ) {
                 Text("Save changes")
             }

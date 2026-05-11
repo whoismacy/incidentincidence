@@ -35,6 +35,12 @@ interface IncidentDao {
     @Query("UPDATE `incidences` SET `date_resolved` = :date;")
     suspend fun resolveDate(date: Date = Date())
 
+    @Query("UPDATE `incidences` SET `content` = :updatedContent WHERE `incidentId` = :id")
+    suspend fun updateContent(
+        updatedContent: String,
+        id: Int,
+    )
+
     @Query("DELETE FROM `incidences` WHERE `incidentId` = :id")
     suspend fun deleteIncident(id: Int)
 }

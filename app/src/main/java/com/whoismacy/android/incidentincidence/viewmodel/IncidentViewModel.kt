@@ -279,6 +279,24 @@ class IncidentViewModel
             }
         }
 
+        fun updateIncidentContent(
+            id: Int,
+            content: String,
+        ) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncident(content, id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Incident #4 Successfully updated 🎉"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent("Error: ${e.message}"),
+                    )
+                }
+            }
+        }
+
         fun updateSearchQuery(query: String) {
             _displayFilterState.update {
                 it.copy(searchQuery = query)
