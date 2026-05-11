@@ -2,11 +2,8 @@ package com.whoismacy.android.incidentincidence.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @Composable
 fun HomeScreen(

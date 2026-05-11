@@ -13,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.routes.extraroutes.CreateIncidentRoute
 import com.whoismacy.android.incidentincidence.routes.extraroutes.captureImageDestination
 import com.whoismacy.android.incidentincidence.routes.extraroutes.createIncidentDestination
 import com.whoismacy.android.incidentincidence.routes.extraroutes.editDestination
@@ -25,11 +27,14 @@ import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HomeNavigation
+data object ExtrasNavigation
+
+@Serializable
+data object MainGraph
 
 val LocalRootNavController =
     staticCompositionLocalOf<NavController> {
-        error("ROOT NAV CONTROLLER NOT PROVIDED")
+        error("ROOT NAV CONTROLLER NOT PROVIDED!!!")
     }
 
 @RequiresApi(Build.VERSION_CODES.Q)
@@ -50,28 +55,33 @@ fun RootNavigation(
     ) {
         NavHost(
             rootNavController,
-            HomeNavigation,
+            MainGraph,
         ) {
-            navigation<HomeNavigation>(HomeRoute) {
-                mainAppHost(rootNavController)
+            composable<MainGraph> {
+                MainAppHost(rootNavController, viewModel)
             }
-            createIncidentDestination {
-                rootNavController
-                    .navigateToHomeDestination()
-            }
-            trendDestination()
-            captureImageDestination()
-            editDestination(
+            extrasGraph(
+                rootNavController,
                 displayData,
-            ) { rootNavController.navigateToCaptureImage() }
+            )
         }
     }
 }
 
-fun NavGraphBuilder.mainAppHost(rootNavController: NavController) {
-    composable<HomeNavigation> {
-        MainAppHost(
-            rootNavController = rootNavController,
-        )
+@RequiresApi(Build.VERSION_CODES.Q)
+fun NavGraphBuilder.extrasGraph(
+    rootNavController: NavController,
+    displayData: List<Incident>,
+) {
+    navigation<ExtrasNavigation>(startDestination = CreateIncidentRoute) {
+        createIncidentDestination {
+            rootNavController
+                .navigateToHomeDestination()
+        }
+        trendDestination()
+        captureImageDestination()
+        editDestination(
+            displayData,
+        ) { rootNavController.navigateToCaptureImage() }
     }
 }

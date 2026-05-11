@@ -2,17 +2,13 @@ package com.whoismacy.android.incidentincidence.routes.mainapphost
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -21,16 +17,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.whoismacy.android.incidentincidence.R
 import com.whoismacy.android.incidentincidence.routes.extraroutes.navigateToNewIncidentDestination
+import com.whoismacy.android.incidentincidence.screens.HomeScreen
+import com.whoismacy.android.incidentincidence.screens.SolvedIncidentsScreen
+import com.whoismacy.android.incidentincidence.view.BottomNavigation
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
@@ -112,8 +110,13 @@ fun MainAppHost(
                 startDestination = HomeRoute,
                 modifier = Modifier.padding(innerPadding),
             ) {
-                homeDestination()
-                solvedIncidentDestination()
+                composable<HomeRoute> {
+                    HomeScreen()
+                }
+
+                composable<SolvedIncidentsRoute> {
+                    SolvedIncidentsScreen()
+                }
             }
         }
     }
@@ -131,59 +134,5 @@ fun MainAppHost(
                 event.action()
             }
         }
-    }
-}
-
-@Composable
-fun BottomNavigation(
-    onNavigateHome: () -> Unit,
-    onNavigateSolved: () -> Unit,
-    onNavigateTrend: () -> Unit,
-    currentDestination: String,
-) {
-    NavigationBar {
-        NavigationBarItem(
-            selected = currentDestination.contains("Home"),
-            onClick = {
-                onNavigateHome()
-            },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.outline_free_breakfast_24),
-                    contentDescription = null,
-                )
-            },
-            label = {
-                Text("Home")
-            },
-        )
-
-        NavigationBarItem(
-            selected = currentDestination.contains("SolvedIncidents"),
-            onClick = { onNavigateSolved() },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.outline_star_shine_24),
-                    contentDescription = null,
-                )
-            },
-            label = {
-                Text("Solved")
-            },
-        )
-
-        NavigationBarItem(
-            selected = currentDestination.contains("Trend"),
-            onClick = { onNavigateTrend() },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_trending_up_24),
-                    contentDescription = null,
-                )
-            },
-            label = {
-                Text("Trend")
-            },
-        )
     }
 }
