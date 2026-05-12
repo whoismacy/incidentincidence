@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 @Database(
     entities = [Incident::class],
     exportSchema = false,
-    version = 2,
+    version = 3,
 )
 @TypeConverters(IncidentConverters::class)
 abstract class IncidentDatabase : RoomDatabase() {
@@ -22,6 +22,12 @@ abstract class IncidentDatabase : RoomDatabase() {
             object : Migration(1, 2) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     db.execSQL("ALTER TABLE `incidences` ADD COLUMN `severity` TEXT NOT NULL DEFAULT 'low'")
+                }
+            }
+        private val Migration_2_3 =
+            object : Migration(2, 3) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE `incidences` ADD COLUMN `image_uri` TEXT NOT NULL DEFAULT 'NULL'")
                 }
             }
         private var INSTANCE: IncidentDatabase? = null
@@ -37,7 +43,7 @@ abstract class IncidentDatabase : RoomDatabase() {
                                 context = context.applicationContext,
                                 klass = IncidentDatabase::class.java,
                                 name = "incidentDatabase",
-                            ).addMigrations(Migration_1_2)
+                            ).addMigrations(Migration_1_2, Migration_2_3)
                             .fallbackToDestructiveMigration(false)
                             .build()
                     INSTANCE = instance

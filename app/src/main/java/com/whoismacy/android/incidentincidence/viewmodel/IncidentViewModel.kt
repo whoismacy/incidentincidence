@@ -69,6 +69,8 @@ class IncidentViewModel
 
         private val currentEditIncidentId = MutableStateFlow(0)
 
+        val updateUri: (String) -> Unit = { updateIncidentImageUri(it, currentEditIncidentId.value) }
+
         private val previewUseCase =
             Preview
                 .Builder()
@@ -207,7 +209,7 @@ class IncidentViewModel
                                     _snackbarEvents.send(SnackbarEvent("Error saving Image"))
                                     return@launch
                                 }
-                                mediaStoreUtil.saveImage(bitMap, currentEditIncidentId.value)
+                                mediaStoreUtil.saveImage(bitMap, updateUri)
                                 when (tempFile.delete()) {
                                     true -> {
                                         Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
@@ -295,9 +297,27 @@ class IncidentViewModel
         ) {
             viewModelScope.launch {
                 try {
-                    repository.updateIncident(content, id)
+                    repository.updateIncidentId(content, id)
                     _snackbarEvents.send(
                         SnackbarEvent("Incident #4 Successfully updated 🎉"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent("Error: ${e.message}"),
+                    )
+                }
+            }
+        }
+
+        fun updateIncidentImageUri(
+            uri: String,
+            id: Int,
+        ) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncidentImageUri(uri, id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Image successfully added 🎉"),
                     )
                 } catch (e: Exception) {
                     _snackbarEvents.send(

@@ -41,6 +41,12 @@ interface IncidentDao {
         id: Int,
     )
 
+    @Query("UPDATE `incidences` SET `image_uri` = :uri WHERE `incidentId` = :id")
+    suspend fun updateImageUrl(
+        uri: String,
+        id: Int,
+    )
+
     @Query("DELETE FROM `incidences` WHERE `incidentId` = :id")
     suspend fun deleteIncident(id: Int)
 }

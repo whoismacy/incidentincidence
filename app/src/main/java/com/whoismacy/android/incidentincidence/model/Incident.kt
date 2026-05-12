@@ -26,4 +26,7 @@ class Incident {
     var dateResolved: Date? = Date()
 
     var severity: String = ""
+
+    @ColumnInfo(name = "image_uri")
+    var imageUri: String = ""
 }

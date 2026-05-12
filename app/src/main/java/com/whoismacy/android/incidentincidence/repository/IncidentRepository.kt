@@ -36,12 +36,21 @@ class IncidentRepository(
         }
     }
 
-    fun updateIncident(
+    fun updateIncidentId(
         content: String,
         id: Int,
     ) {
         coroutineScope.launch(dispatcher) {
             incidentsDao.updateContent(content, id)
+        }
+    }
+
+    fun updateIncidentImageUri(
+        uri: String,
+        id: Int,
+    ) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.updateImageUrl(uri, id)
         }
     }
 

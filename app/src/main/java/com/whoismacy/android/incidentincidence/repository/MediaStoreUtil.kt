@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,7 +16,7 @@ class MediaStoreUtil(
 ) {
     suspend fun saveImage(
         bitmap: Bitmap,
-        id: Int,
+        updateImage: (String) -> Unit,
     ) {
         withContext(Dispatchers.IO) {
             val resolver = context.contentResolver
@@ -67,7 +66,7 @@ class MediaStoreUtil(
                             null,
                             null,
                         )
-                    Log.d("MEDIA STORE UTIL", uri.toString())
+                    updateImage(uri.toString())
                 } catch (e: Exception) {
                     e.printStackTrace()
                     resolver.delete(uri, null, null)
