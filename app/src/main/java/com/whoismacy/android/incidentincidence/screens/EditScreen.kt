@@ -40,6 +40,7 @@ fun EditScreen(
     onNavigateHome: () -> Unit,
     viewModel: IncidentViewModel,
 ) {
+    viewModel.updateEditIncidentId(id)
     val incident = incidents.first { it.id == id }
     var contentValue by remember { mutableStateOf(if (id != -1) incident.content else "") }
     val changeContentValue: (String) -> Unit = { contentValue = it }

@@ -2,6 +2,7 @@ package com.whoismacy.android.incidentincidence.viewmodel
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
@@ -66,6 +67,8 @@ class IncidentViewModel
         private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
         val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest.asStateFlow()
 
+        private val currentEditIncidentId = MutableStateFlow(0)
+
         private val previewUseCase =
             Preview
                 .Builder()
@@ -84,34 +87,6 @@ class IncidentViewModel
                     setFlashMode(FLASH_MODE_AUTO)
                     setOutputFormat(OUTPUT_FORMAT_JPEG)
                 }.build()
-
-        init {
-            viewModelScope.launch {
-                repository.allIncidences.collect { incidents ->
-                    val totalCount = incidents.count()
-                    val resolvedCount = incidents.count { it.resolved }
-                    val lowCount = incidents.count { it.severity == "low" }
-                    val mediumCount = incidents.count { it.severity == "medium" }
-                    val highCount = incidents.count { it.severity == "high" }
-                    val severeCount = incidents.count { it.severity == "severe" }
-
-                    _trendsObject.value =
-                        TrendScreenObject(
-                            totalIncidents = totalCount,
-                            totalShares = repository.totalShares,
-                            totalResolved = resolvedCount,
-                            severityCount =
-                                SeverityCount(
-                                    low = lowCount,
-                                    medium = mediumCount,
-                                    high = highCount,
-                                    severe = severeCount,
-                                ),
-                        )
-                    _isLoading.value = false
-                }
-            }
-        }
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val displayIncidences =
@@ -143,6 +118,34 @@ class IncidentViewModel
                     emptyList(),
                 )
 
+        init {
+            viewModelScope.launch {
+                repository.allIncidences.collect { incidents ->
+                    val totalCount = incidents.count()
+                    val resolvedCount = incidents.count { it.resolved }
+                    val lowCount = incidents.count { it.severity == "low" }
+                    val mediumCount = incidents.count { it.severity == "medium" }
+                    val highCount = incidents.count { it.severity == "high" }
+                    val severeCount = incidents.count { it.severity == "severe" }
+
+                    _trendsObject.value =
+                        TrendScreenObject(
+                            totalIncidents = totalCount,
+                            totalShares = repository.totalShares,
+                            totalResolved = resolvedCount,
+                            severityCount =
+                                SeverityCount(
+                                    low = lowCount,
+                                    medium = mediumCount,
+                                    high = highCount,
+                                    severe = severeCount,
+                                ),
+                        )
+                    _isLoading.value = false
+                }
+            }
+        }
+
         private fun applySorting(
             incidents: List<Incident>,
             sortValue: SortValues,
@@ -169,6 +172,10 @@ class IncidentViewModel
             } finally {
                 processCameraProvider.unbindAll()
             }
+        }
+
+        fun updateEditIncidentId(id: Int) {
+            currentEditIncidentId.value = id
         }
 
         @RequiresApi(Build.VERSION_CODES.Q)
@@ -200,10 +207,11 @@ class IncidentViewModel
                                     _snackbarEvents.send(SnackbarEvent("Error saving Image"))
                                     return@launch
                                 }
-                                mediaStoreUtil.saveImage(bitMap)
+                                mediaStoreUtil.saveImage(bitMap, currentEditIncidentId.value)
                                 when (tempFile.delete()) {
                                     true -> {
                                         Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
+                                        Log.d("INCIDENT VIEW MODEL", p0.savedUri?.toString() as String)
                                         onNavigateBack()
                                     }
 
