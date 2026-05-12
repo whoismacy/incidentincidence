@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.routes.mainapphost.LocalIncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.utils.shimmer
 import com.whoismacy.android.incidentincidence.view.EmptyStateIndicator
 import com.whoismacy.android.incidentincidence.view.IncidentItem

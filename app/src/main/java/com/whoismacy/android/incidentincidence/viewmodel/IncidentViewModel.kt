@@ -69,7 +69,9 @@ class IncidentViewModel
 
         private val currentEditIncidentId = MutableStateFlow(0)
 
-        val updateUri: (String) -> Unit = { updateIncidentImageUri(it, currentEditIncidentId.value) }
+        val updateUri: (String) -> Unit = {
+            updateIncidentImageUri(uri = it, id = currentEditIncidentId.value)
+        }
 
         private val previewUseCase =
             Preview
@@ -210,10 +212,10 @@ class IncidentViewModel
                                     return@launch
                                 }
                                 mediaStoreUtil.saveImage(bitMap, updateUri)
+                                Log.e("INCIDENT VIEW MODEL", currentEditIncidentId.value.toString())
                                 when (tempFile.delete()) {
                                     true -> {
                                         Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
-                                        Log.d("INCIDENT VIEW MODEL", p0.savedUri?.toString() as String)
                                         onNavigateBack()
                                     }
 

@@ -25,7 +25,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -44,8 +45,12 @@ android {
 }
 
 dependencies {
-    ksp("androidx.room:room-compiler:2.8.4")
-    ksp("com.google.dagger:hilt-android-compiler:2.59.1")
+    ksp(libs.androidx.room.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
+    ksp(libs.glide)
+    annotationProcessor(libs.glideCompiler)
+    implementation(libs.glide)
+    implementation(libs.glideCompose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

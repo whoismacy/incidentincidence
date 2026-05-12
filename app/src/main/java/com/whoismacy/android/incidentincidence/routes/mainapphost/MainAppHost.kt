@@ -10,38 +10,30 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.screens.HomeScreen
 import com.whoismacy.android.incidentincidence.screens.SolvedIncidentsScreen
 import com.whoismacy.android.incidentincidence.view.BottomNavigation
 import com.whoismacy.android.incidentincidence.view.Fab
 import com.whoismacy.android.incidentincidence.view.SearchBar
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
-
-val LocalIncidentViewModel =
-    staticCompositionLocalOf<IncidentViewModel> {
-        error("NO VIEWMODEL PROVIDED!!")
-    }
 
 @Composable
 fun MainAppHost(
     onNavigateNewIncidentScreen: () -> Unit,
     onNavigateTrendScreen: () -> Unit,
-    viewModel: IncidentViewModel = hiltViewModel(),
 ) {
+    val viewModel = LocalIncidentViewModel.current
     val displayFilterState by viewModel
         .displayFilterState
         .collectAsStateWithLifecycle()
@@ -65,53 +57,49 @@ fun MainAppHost(
             .navigateToSolvedIncidentDestination()
     }
 
-    CompositionLocalProvider(
-        LocalIncidentViewModel provides viewModel,
-    ) {
-        Scaffold(
-            topBar = {
-                SearchBar(displayFilterState.searchQuery, viewModel)
-            },
-            bottomBar = {
-                BottomNavigation(
-                    onNavigateHome = onNavigateHome,
-                    onNavigateSolved = onNavigateSolved,
-                    onNavigateTrend = onNavigateTrendScreen,
-                    currentDestination = currentDestination,
+    Scaffold(
+        topBar = {
+            SearchBar(displayFilterState.searchQuery, viewModel)
+        },
+        bottomBar = {
+            BottomNavigation(
+                onNavigateHome = onNavigateHome,
+                onNavigateSolved = onNavigateSolved,
+                onNavigateTrend = onNavigateTrendScreen,
+                currentDestination = currentDestination,
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(snackBarHostState) { snackbarData ->
+                Snackbar(
+                    modifier =
+                        Modifier
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    actionColor = MaterialTheme.colorScheme.primary,
+                    actionContentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = RoundedCornerShape(12.dp),
+                    snackbarData = snackbarData,
                 )
-            },
-            snackbarHost = {
-                SnackbarHost(snackBarHostState) { snackbarData ->
-                    Snackbar(
-                        modifier =
-                            Modifier
-                                .padding(16.dp)
-                                .clip(RoundedCornerShape(12.dp)),
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        actionColor = MaterialTheme.colorScheme.primary,
-                        actionContentColor = MaterialTheme.colorScheme.onPrimary,
-                        shape = RoundedCornerShape(12.dp),
-                        snackbarData = snackbarData,
-                    )
-                }
-            },
-            floatingActionButton = {
-                Fab { onNavigateNewIncidentScreen() }
-            },
-        ) { innerPadding ->
-            NavHost(
-                navController = mainAppNavController,
-                startDestination = HomeRoute,
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                composable<HomeRoute> {
-                    HomeScreen()
-                }
+            }
+        },
+        floatingActionButton = {
+            Fab { onNavigateNewIncidentScreen() }
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = mainAppNavController,
+            startDestination = HomeRoute,
+            modifier = Modifier.padding(innerPadding),
+        ) {
+            composable<HomeRoute> {
+                HomeScreen()
+            }
 
-                composable<SolvedIncidentsRoute> {
-                    SolvedIncidentsScreen()
-                }
+            composable<SolvedIncidentsRoute> {
+                SolvedIncidentsScreen()
             }
         }
     }

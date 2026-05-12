@@ -7,21 +7,30 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
 kotlin = "2.3.20"
-composeBom = "2026.03.01"
+composeBom = "2026.05.00"
 roomVersion = "2.8.4"
 lifecycleViewmodelCompose = "2.10.0"
 hilt = "2.59.1"
 hiltNavigationCompose = "1.2.0"
 splashScreen = "1.2.0"
 material3Vers = "1.4.0"
-navVersion = "2.9.7"
+navVersion = "2.9.8"
 kotlinSerialisationVer = "1.11.0"
 materialIconsVers = "1.7.8"
 hiltDaggerVersion = "2.59.1"
-cameraX = "1.6.0"
+cameraX = "1.6.1"
 accompanist = "0.37.3"
+roomCompiler = "2.8.4"
+hiltAndroidCompiler = "2.59.1"
+glideVersion = "5.0.7"
+glideCompose = '1.0.0-beta09'
 
 [libraries]
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion"}
+glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideCompose"}
+glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion"}
+dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler"}
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler"}
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraX"}
 androidx-camera-compose = { module = "androidx.camera:camera-compose", version.ref = "cameraX"}
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX"}

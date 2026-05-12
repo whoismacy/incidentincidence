@@ -4,9 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.screens.EditScreen
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,19 +13,15 @@ data class EditRoute(
 )
 
 fun NavGraphBuilder.editDestination(
-    incidents: List<Incident>,
     onNavigateCaptureImage: () -> Unit,
     onNavigateHome: () -> Unit,
-    viewModel: IncidentViewModel,
 ) {
     composable<EditRoute> { backStackEntry ->
         val editRoute = backStackEntry.toRoute<EditRoute>()
         EditScreen(
             id = editRoute.id,
-            incidents = incidents,
             onNavigateCaptureImage = { onNavigateCaptureImage() },
             onNavigateHome = { onNavigateHome() },
-            viewModel = viewModel,
         )
     }
 }
