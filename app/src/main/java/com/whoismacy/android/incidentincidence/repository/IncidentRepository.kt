@@ -54,6 +54,14 @@ class IncidentRepository(
         }
     }
 
+    fun updateIncidentImageUriNull(
+        id: Int,
+    ) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.updateImageUriNull(id)
+        }
+    }
+
     fun resolveIncident(id: Int) {
         coroutineScope.launch(dispatcher) {
             incidentsDao.resolveIncident(id)

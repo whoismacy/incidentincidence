@@ -327,6 +327,19 @@ class IncidentViewModel
             }
         }
 
+        fun updateImageUriNull(id: Int) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncidentImageUriNull(id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Image deleted ❌"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(SnackbarEvent("Error: ${e.message}"))
+                }
+            }
+        }
+
         fun updateSearchQuery(query: String) {
             _displayFilterState.update {
                 it.copy(searchQuery = query)
