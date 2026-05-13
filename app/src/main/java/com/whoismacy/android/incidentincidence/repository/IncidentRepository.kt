@@ -1,5 +1,7 @@
-package com.whoismacy.android.incidentincidence.model
+package com.whoismacy.android.incidentincidence.repository
 
+import com.whoismacy.android.incidentincidence.model.Incident
+import com.whoismacy.android.incidentincidence.model.IncidentDao
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,32 @@ class IncidentRepository(
     fun incrementShare(id: Int) {
         coroutineScope.launch(dispatcher) {
             incidentsDao.incrementShare(id)
+        }
+    }
+
+    fun updateIncidentId(
+        content: String,
+        id: Int,
+    ) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.updateContent(content, id)
+        }
+    }
+
+    fun updateIncidentImageUri(
+        uri: String,
+        id: Int,
+    ) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.updateImageUrl(uri, id)
+        }
+    }
+
+    fun updateIncidentImageUriNull(
+        id: Int,
+    ) {
+        coroutineScope.launch(dispatcher) {
+            incidentsDao.updateImageUriNull(id)
         }
     }
 

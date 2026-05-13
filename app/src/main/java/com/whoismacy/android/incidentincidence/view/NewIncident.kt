@@ -33,9 +33,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
+import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
 
 enum class SeverityOptions {
     LOW,
@@ -47,10 +45,10 @@ enum class SeverityOptions {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewIncident(
-    rootNavController: NavController,
+    onNavigateHome: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: IncidentViewModel = hiltViewModel<IncidentViewModel>(),
 ) {
+    val viewModel = LocalIncidentViewModel.current
     var incidentText by rememberSaveable { mutableStateOf("") }
     var checkBoxState by rememberSaveable { mutableStateOf(SeverityOptions.LOW) }
     val changeCheckBoxState: (SeverityOptions) -> Unit = { option -> checkBoxState = option }
@@ -102,7 +100,7 @@ fun NewIncident(
                 TextButton(
                     modifier = Modifier.padding(end = 8.dp),
                     onClick = {
-                        rootNavController.popBackStack()
+                        onNavigateHome()
                     },
                 ) {
                     Text("Cancel")
@@ -112,7 +110,7 @@ fun NewIncident(
                     onClick = {
                         if (incidentText.isNotBlank()) {
                             viewModel.add(incidentText, checkBoxState.name.lowercase())
-                            rootNavController.popBackStack()
+                            onNavigateHome()
                         }
                     },
                 ) {

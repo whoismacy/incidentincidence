@@ -6,18 +6,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import com.whoismacy.android.incidentincidence.R
 
 @Composable
-fun Fab(rootNavController: NavController) {
+fun Fab(
+    onNavigateNewIncidentItem: () -> Unit,
+) {
     ExtendedFloatingActionButton(
         onClick = {
-            rootNavController.navigate(CreateIncidentRoute) {
-                popUpTo(IncidentIncidenceRoute) {
-                    saveState = true
-                }
-            }
+            onNavigateNewIncidentItem()
         },
         icon = {
             Icon(

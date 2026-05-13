@@ -3,7 +3,7 @@ package com.whoismacy.android.incidentincidence.di
 import android.content.Context
 import com.whoismacy.android.incidentincidence.model.IncidentDao
 import com.whoismacy.android.incidentincidence.model.IncidentDatabase
-import com.whoismacy.android.incidentincidence.model.IncidentRepository
+import com.whoismacy.android.incidentincidence.repository.IncidentRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

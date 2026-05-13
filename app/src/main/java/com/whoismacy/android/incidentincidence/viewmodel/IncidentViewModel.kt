@@ -1,24 +1,41 @@
 package com.whoismacy.android.incidentincidence.viewmodel
 
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY
+import androidx.camera.core.ImageCapture.FLASH_MODE_AUTO
+import androidx.camera.core.ImageCapture.OUTPUT_FORMAT_JPEG
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceRequest
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.whoismacy.android.incidentincidence.model.Incident
-import com.whoismacy.android.incidentincidence.model.IncidentRepository
+import com.whoismacy.android.incidentincidence.repository.IncidentRepository
+import com.whoismacy.android.incidentincidence.repository.MediaStoreUtil
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 data class SnackbarEvent(
@@ -27,25 +44,13 @@ data class SnackbarEvent(
     val action: suspend () -> Unit = {},
 )
 
-sealed class Result<out T> {
-    object Loading : Result<Nothing>()
-
-    data class Success<out T>(
-        val data: T,
-    ) : Result<T>()
-
-    data class Error(
-        val exception: Throwable,
-    ) : Result<Nothing>()
-}
-
 @HiltViewModel
 class IncidentViewModel
     @Inject
     constructor(
         private val repository: IncidentRepository,
     ) : ViewModel() {
-        private val _snackbarEvents = Channel<SnackbarEvent>()
+        private val _snackbarEvents = Channel<SnackbarEvent>(capacity = Channel.BUFFERED)
         val snackbarEvents = _snackbarEvents.receiveAsFlow()
 
         private val _displayFilterState = MutableStateFlow(DisplayFilterState())
@@ -57,33 +62,27 @@ class IncidentViewModel
         private val _isLoading = MutableStateFlow(true)
         val isLoading = _isLoading.asStateFlow()
 
-        init {
-            viewModelScope.launch {
-                repository.allIncidences.collect { incidents ->
-                    val totalCount = incidents.count()
-                    val resolvedCount = incidents.count { it.resolved }
-                    val lowCount = incidents.count { it.severity == "low" }
-                    val mediumCount = incidents.count { it.severity == "medium" }
-                    val highCount = incidents.count { it.severity == "high" }
-                    val severeCount = incidents.count { it.severity == "severe" }
+        private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
+        val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest.asStateFlow()
 
-                    _trendsObject.value =
-                        TrendScreenObject(
-                            totalIncidents = totalCount,
-                            totalShares = repository.totalShares,
-                            totalResolved = resolvedCount,
-                            severityCount =
-                                SeverityCount(
-                                    low = lowCount,
-                                    medium = mediumCount,
-                                    high = highCount,
-                                    severe = severeCount,
-                                ),
-                        )
-                    _isLoading.value = false
+        private val previewUseCase =
+            Preview
+                .Builder()
+                .build()
+                .apply {
+                    setSurfaceProvider { newSurfaceRequest ->
+                        _surfaceRequest.update { newSurfaceRequest }
+                    }
                 }
-            }
-        }
+
+        private val imageCaptureUseCase =
+            ImageCapture
+                .Builder()
+                .apply {
+                    setCaptureMode(CAPTURE_MODE_MAXIMIZE_QUALITY)
+                    setFlashMode(FLASH_MODE_AUTO)
+                    setOutputFormat(OUTPUT_FORMAT_JPEG)
+                }.build()
 
         @OptIn(ExperimentalCoroutinesApi::class)
         val displayIncidences =
@@ -115,14 +114,117 @@ class IncidentViewModel
                     emptyList(),
                 )
 
-        private fun applySorting(
-            incidents: List<Incident>,
-            sortValue: SortValues,
-        ): List<Incident> =
-            when (sortValue) {
-                SortValues.NEWEST -> incidents.sortedBy { it.dateAdded }.reversed()
-                SortValues.OLDEST -> incidents.sortedBy { it.dateAdded }
+        init {
+            viewModelScope.launch {
+                repository.allIncidences.collect { incidents ->
+                    val totalCount = incidents.count()
+                    val resolvedCount = incidents.count { it.resolved }
+                    val lowCount = incidents.count { it.severity == "low" }
+                    val mediumCount = incidents.count { it.severity == "medium" }
+                    val highCount = incidents.count { it.severity == "high" }
+                    val severeCount = incidents.count { it.severity == "severe" }
+
+                    _trendsObject.value =
+                        TrendScreenObject(
+                            totalIncidents = totalCount,
+                            totalShares = repository.totalShares,
+                            totalResolved = resolvedCount,
+                            severityCount =
+                                SeverityCount(
+                                    low = lowCount,
+                                    medium = mediumCount,
+                                    high = highCount,
+                                    severe = severeCount,
+                                ),
+                        )
+                    _isLoading.value = false
+                }
             }
+        }
+
+        suspend fun bindToCamera(
+            appContext: Context,
+            lifecycleOwner: LifecycleOwner,
+        ) {
+            val processCameraProvider = ProcessCameraProvider.awaitInstance(appContext)
+            processCameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                previewUseCase,
+                imageCaptureUseCase,
+            )
+
+            try {
+                awaitCancellation()
+            } finally {
+                processCameraProvider.unbindAll()
+            }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.Q)
+        fun capturePicture(
+            id: Int,
+            context: Context,
+            onNavigateBack: () -> Unit,
+        ) {
+            val tempFile = File.createTempFile("incident_", ".jpg", context.cacheDir)
+            val mediaStoreUtil = MediaStoreUtil(context)
+            val outputFileOptions =
+                ImageCapture
+                    .OutputFileOptions
+                    .Builder(tempFile)
+                    .build()
+            val executor = ContextCompat.getMainExecutor(context)
+
+            imageCaptureUseCase.takePicture(
+                outputFileOptions,
+                executor,
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(p0: ImageCapture.OutputFileResults) {
+                        viewModelScope.launch {
+                            try {
+                                val bitMap =
+                                    android
+                                        .graphics.BitmapFactory
+                                        .decodeFile(tempFile.absolutePath)
+                                if (bitMap == null) {
+                                    _snackbarEvents.send(SnackbarEvent("Error decoding Image"))
+                                    tempFile.delete()
+                                    return@launch
+                                }
+                                mediaStoreUtil.saveImage(bitMap) { uri: String ->
+                                    updateIncidentImageUri(uri = uri, id = id)
+                                }
+                                Log.e("INCIDENT VIEW MODEL", id.toString())
+                                when (tempFile.delete()) {
+                                    true -> {
+                                        _snackbarEvents.send(SnackbarEvent("Image successfully saved 🎉"))
+                                        onNavigateBack()
+                                    }
+
+                                    false -> {
+                                        _snackbarEvents.send(SnackbarEvent("Image creation failed ❌"))
+                                        onNavigateBack()
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                Log.e("INCIDENT VIEW MODEL CAPTURE IMAGE", "Failed ${e.message}", e)
+                                _snackbarEvents.send(SnackbarEvent("Image creation failed!: ${e.message}"))
+                                tempFile.delete()
+                            }
+                        }
+                    }
+
+                    override fun onError(p0: ImageCaptureException) {
+                        viewModelScope.launch {
+                            _snackbarEvents.send(
+                                SnackbarEvent("Image Capture failed"),
+                            )
+                        }
+                    }
+                },
+            )
+        }
 
         fun add(
             content: String,
@@ -133,8 +235,7 @@ class IncidentViewModel
                     repository.add(content, severity)
                     _snackbarEvents.send(
                         SnackbarEvent(
-                            message = "Incident added successfully",
-                            action = {},
+                            message = "Incident created successfully 🎉",
                         ),
                     )
                 } catch (e: Exception) {
@@ -166,14 +267,62 @@ class IncidentViewModel
                     repository.deleteIncident(id)
                     _snackbarEvents.send(
                         SnackbarEvent(
-                            message = "Incident deleted",
-                            action = {},
+                            message = "Incident deleted ❌",
                         ),
                     )
                 } catch (e: Exception) {
                     _snackbarEvents.send(
                         SnackbarEvent("Error: ${e.message}"),
                     )
+                }
+            }
+        }
+
+        fun updateIncidentContent(
+            id: Int,
+            content: String,
+        ) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncidentId(content, id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Incident #$id Successfully updated 🎉"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent("Error: ${e.message}"),
+                    )
+                }
+            }
+        }
+
+        fun updateIncidentImageUri(
+            uri: String,
+            id: Int,
+        ) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncidentImageUri(uri, id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Image successfully added 🎉"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(
+                        SnackbarEvent("Error: ${e.message}"),
+                    )
+                }
+            }
+        }
+
+        fun updateImageUriNull(id: Int) {
+            viewModelScope.launch {
+                try {
+                    repository.updateIncidentImageUriNull(id)
+                    _snackbarEvents.send(
+                        SnackbarEvent("Image deleted ❌"),
+                    )
+                } catch (e: Exception) {
+                    _snackbarEvents.send(SnackbarEvent("Error: ${e.message}"))
                 }
             }
         }
