@@ -1,6 +1,5 @@
 package com.whoismacy.android.incidentincidence.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,14 +8,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,66 +55,133 @@ fun EditScreen(
     val incident = incidents.first { it.id == id }
     var contentValue by remember { mutableStateOf(incident.content) }
     val changeContentValue: (String) -> Unit = { contentValue = it }
+    val buttonEnabled = contentValue != incident.content
 
     Surface(
         color = MaterialTheme.colorScheme.background,
         contentColor =
             contentColorFor(backgroundColor = MaterialTheme.colorScheme.background),
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Box(
+        LazyColumn(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-            contentAlignment = Alignment.Center,
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                ImageCompose(incident.imageUri)
+            item {
                 Text(
-                    "Incident #${incident.id}",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.fillMaxWidth(),
+                    "Edit Incident #$id",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                 )
+            }
 
-                Spacer(Modifier.height(12.dp))
-
-                TextFieldEdit(
-                    content = contentValue,
-                    changeContentValue = changeContentValue,
-                    incidentId = id,
-                )
-
-                TextButton(
-                    onClick = {
-                        if (incident.imageUri == "NULL") {
-                            onNavigateCaptureImage()
-                        } else {
-                            viewModel.updateImageUriNull(incident.id)
-                        }
-                    },
-                    border = BorderStroke((0.8).dp, MaterialTheme.colorScheme.secondary),
-                ) {
-                    Text(if (incident.imageUri == "NULL") "Add Image" else "Delete Image")
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Button(
-                    enabled = contentValue != incident.content,
-                    onClick = {
-                        if (contentValue != incident.content && contentValue.isNotBlank()) {
-                            viewModel.updateIncidentContent(id = id, content = contentValue)
-                            onNavigateHome()
-                        }
-                    },
+            item {
+                Card(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 ) {
-                    Text("Save changes")
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(220.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        ImageCompose(incident.imageUri)
+                    }
                 }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor =
+                                MaterialTheme.colorScheme.surface,
+                        ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Text(
+                            "Details",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+
+                        TextFieldEdit(
+                            content = contentValue,
+                            changeContentValue = changeContentValue,
+                        )
+                    }
+                }
+            }
+
+            item {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    FilledTonalButton(
+                        onClick = {
+                            if (incident.imageUri == "NULL") {
+                                onNavigateCaptureImage()
+                            } else {
+                                viewModel.updateImageUriNull(incident.id)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Icon(
+                            imageVector =
+                                if (incident.imageUri == "NULL") {
+                                    Icons.Default.Add
+                                } else {
+                                    Icons.Default.Delete
+                                },
+                            contentDescription = null,
+                            modifier = Modifier.padding(end = 8.dp),
+                        )
+                        Text(
+                            if (incident.imageUri == "NULL") "Add Image" else "Delete Image",
+                        )
+                    }
+
+                    Button(
+                        enabled = buttonEnabled,
+                        onClick = {
+                            if ((buttonEnabled && contentValue.isNotBlank()) ||
+                                (incident.imageUri != "NULL")
+                            ) {
+                                viewModel.updateIncidentContent(
+                                    id = id,
+                                    content = contentValue,
+                                )
+                                onNavigateHome()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Text("Save Changes")
+                    }
+                }
+            }
+
+            item {
+                Spacer(Modifier.height(8.dp))
             }
         }
     }
@@ -116,23 +190,25 @@ fun EditScreen(
 @Composable
 fun TextFieldEdit(
     content: String,
-    incidentId: Int,
     changeContentValue: (String) -> Unit,
 ) {
-    TextField(
+    OutlinedTextField(
         value = content,
         onValueChange = { changeContentValue(it) },
         label = {
-            Text("Edit Incident #$incidentId")
+            Text("Incident description")
         },
         keyboardOptions =
             KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 autoCorrectEnabled = true,
             ),
-        singleLine = true,
-        maxLines = 10,
-        modifier = Modifier.fillMaxWidth(),
+        minLines = 5,
+        maxLines = 8,
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
     )
 }
 
@@ -147,12 +223,25 @@ fun ImageCompose(
             contentDescription = "Image of a captured Incident",
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp)),
             loading = placeholder(R.drawable.outline_cancel_24),
             failure = placeholder(R.drawable.outline_cancel_24),
+            contentScale = ContentScale.Crop,
         )
+    } else {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                "No Image",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

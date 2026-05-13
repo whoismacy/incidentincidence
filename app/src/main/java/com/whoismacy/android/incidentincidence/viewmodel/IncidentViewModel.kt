@@ -286,7 +286,7 @@ class IncidentViewModel
                 try {
                     repository.updateIncidentId(content, id)
                     _snackbarEvents.send(
-                        SnackbarEvent("Incident #4 Successfully updated 🎉"),
+                        SnackbarEvent("Incident #$id Successfully updated 🎉"),
                     )
                 } catch (e: Exception) {
                     _snackbarEvents.send(

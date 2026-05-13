@@ -1,19 +1,15 @@
 package com.whoismacy.android.incidentincidence.view
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,65 +44,64 @@ fun SearchBar(
     val isLoading = viewModel.isLoading.collectAsStateWithLifecycle().value
 
     Box(
-        modifier = Modifier.fillMaxWidth().padding(top = 48.dp, bottom = 32.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = 48.dp,
+                    bottom = 32.dp,
+                ),
         contentAlignment = Alignment.Center,
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth(0.9f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            TextField(
-                value = state,
-                onValueChange = { viewModel.updateSearchQuery(it) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                placeholder = {
-                    Text("Search")
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_search_24),
-                        contentDescription = null,
-                    )
-                },
-                shape = MaterialTheme.shapes.extraLarge,
-                colors =
-                    TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                    ),
-                modifier = Modifier.shimmer(16.dp, isLoading),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            if (!showFilter) {
-                IconButton(
-                    onClick = {
-                        changeSortFilterState(true)
-                    },
-                    modifier = Modifier.shimmer(8.dp, isLoading),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.sharp_filter_alt_24),
-                        contentDescription = "Filter Icon",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+        OutlinedTextField(
+            value = state,
+            onValueChange = { viewModel.updateSearchQuery(it) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            placeholder = {
+                Text("Search")
+            },
+            leadingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.baseline_search_24),
+                    contentDescription = null,
+                )
+            },
+            shape = MaterialTheme.shapes.medium,
+            colors =
+                TextFieldDefaults.colors(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
+                ),
+            modifier = Modifier.shimmer(16.dp, isLoading).fillMaxWidth(0.9f),
+            trailingIcon = {
+                if (!showFilter) {
+                    IconButton(
+                        onClick = {
+                            changeSortFilterState(true)
+                        },
+                        modifier = Modifier.shimmer(8.dp, isLoading),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.sharp_filter_alt_24),
+                            contentDescription = "Filter Icon",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                } else {
+                    TextButton(onClick = {
+                        viewModel.toggleFilters()
+                    }) {
+                        Text(
+                            "Clear Filters",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.ExtraBold,
+                        )
+                    }
                 }
-            } else {
-                TextButton(onClick = {
-                    viewModel.toggleFilters()
-                }) {
-                    Text(
-                        "Clear Filters",
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.ExtraBold,
-                    )
-                }
-            }
-        }
+            },
+        )
     }
 
     if (showSortFilterModal) {
