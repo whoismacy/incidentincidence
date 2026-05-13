@@ -323,11 +323,3 @@ fun SeverityItem(
         }
     }
 }
-
-@Composable
-@Preview(showBackground = true)
-fun TrendScreenPreview() {
-    IncidentIncidenceTheme {
-        TrendScreen()
-    }
-}
