@@ -69,9 +69,13 @@ fun EditScreen(
     val incidents = viewModel.displayIncidences.collectAsStateWithLifecycle().value
     val incident = incidents.find { it.id == id } ?: return
 
+    val initialImageUri = remember { incident.imageUri }
+    val initialContent = remember { incident.content }
     var contentValue by remember { mutableStateOf(incident.content) }
-    val isChanged = contentValue != incident.content
-    val canSave = isChanged && contentValue.isNotBlank()
+
+    val isContentChanged = contentValue != initialContent
+    val isImageChanged = initialImageUri != incident.imageUri
+    val canSave = isImageChanged || isContentChanged
 
     Scaffold(
         topBar = {
@@ -217,7 +221,7 @@ fun EditScreen(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        if (!hasImage) "Add Photo Attachment" else "Remove Photo Attachment",
+                        if (!hasImage) "Add Photo" else "Remove Photo",
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                     )
                 }
