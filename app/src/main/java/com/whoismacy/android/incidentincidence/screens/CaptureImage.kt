@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -27,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,35 +36,44 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
 import com.whoismacy.android.incidentincidence.R
+import com.whoismacy.android.incidentincidence.routes.LocalIncidentViewModel
 import com.whoismacy.android.incidentincidence.viewmodel.IncidentViewModel
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CaptureImage(
+    id: Int,
     onNavigateBack: () -> Unit,
 ) {
+    val viewModel = LocalIncidentViewModel.current
     val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
     if (cameraPermissionState.status.isGranted) {
-        DisplayCamera(onNavigateBack)
+        DisplayCamera(id = id, onNavigateBack, viewModel = viewModel)
     } else {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            contentColor =
+                contentColorFor(backgroundColor = MaterialTheme.colorScheme.background),
         ) {
-            Column(
-                modifier = Modifier.size(250.dp).padding(32.dp),
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
-                val text =
-                    if (cameraPermissionState.status.shouldShowRationale) {
-                        "Camera access is required to capture a photo.\nPlease grant access"
-                    } else {
-                        "We require camera access.\nBe so kind to grant it"
+                Column(
+                    modifier = Modifier.padding(32.dp),
+                ) {
+                    val text =
+                        if (cameraPermissionState.status.shouldShowRationale) {
+                            "Camera access is required to capture a photo.\nPlease grant access"
+                        } else {
+                            "We require camera access.\nBe so kind to grant it"
+                        }
+                    Text(text, style = MaterialTheme.typography.bodyMedium)
+                    Spacer(Modifier.height(16.dp))
+                    Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                        Text("Grant access")
                     }
-                Text(text, style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(16.dp))
-                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                    Text("Grant access")
                 }
             }
         }
@@ -74,8 +83,9 @@ fun CaptureImage(
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun DisplayCamera(
+    id: Int,
     onNavigateBack: () -> Unit,
-    viewModel: IncidentViewModel = hiltViewModel(),
+    viewModel: IncidentViewModel,
 ) {
     val context = LocalContext.current
     Box(
@@ -83,7 +93,7 @@ fun DisplayCamera(
             Modifier
                 .fillMaxSize(),
     ) {
-        CameraContent()
+        CameraContent(viewModel = viewModel)
         Surface(
             color = Color.Black.copy(alpha = 0.8f),
             modifier =
@@ -100,7 +110,8 @@ fun DisplayCamera(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = {
-                    viewModel.capturePicture(context, onNavigateBack)
+                    viewModel
+                        .capturePicture(context = context, onNavigateBack = onNavigateBack, id = id)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_camera_alt_24),
@@ -116,7 +127,7 @@ fun DisplayCamera(
 
 @Composable
 fun CameraContent(
-    viewModel: IncidentViewModel = hiltViewModel(),
+    viewModel: IncidentViewModel,
     lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
 ) {
     val surfaceRequest =

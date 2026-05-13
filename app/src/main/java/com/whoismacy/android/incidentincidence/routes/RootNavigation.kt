@@ -86,7 +86,7 @@ fun NavGraphBuilder.extrasGraph(
                 .popBackStack()
         })
         editDestination(
-            onNavigateCaptureImage = { rootNavController.navigateToCaptureImage() },
+            onNavigateCaptureImage = { id -> rootNavController.navigateToCaptureImage(id) },
             onNavigateHome = { rootNavController.popBackStack() },
         )
     }

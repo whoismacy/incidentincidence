@@ -13,14 +13,14 @@ data class EditRoute(
 )
 
 fun NavGraphBuilder.editDestination(
-    onNavigateCaptureImage: () -> Unit,
+    onNavigateCaptureImage: (id: Int) -> Unit,
     onNavigateHome: () -> Unit,
 ) {
     composable<EditRoute> { backStackEntry ->
         val editRoute = backStackEntry.toRoute<EditRoute>()
         EditScreen(
             id = editRoute.id,
-            onNavigateCaptureImage = { onNavigateCaptureImage() },
+            onNavigateCaptureImage = { onNavigateCaptureImage(editRoute.id) },
             onNavigateHome = { onNavigateHome() },
         )
     }

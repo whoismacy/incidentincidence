@@ -3,7 +3,6 @@ package com.whoismacy.android.incidentincidence.viewmodel
 import android.content.Context
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -19,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.whoismacy.android.incidentincidence.model.Incident
 import com.whoismacy.android.incidentincidence.repository.IncidentRepository
 import com.whoismacy.android.incidentincidence.repository.MediaStoreUtil
 import com.whoismacy.android.incidentincidence.utils.filterAccordingToDate
@@ -66,12 +64,6 @@ class IncidentViewModel
 
         private val _surfaceRequest = MutableStateFlow<SurfaceRequest?>(null)
         val surfaceRequest: StateFlow<SurfaceRequest?> = _surfaceRequest.asStateFlow()
-
-        private val currentEditIncidentId = MutableStateFlow(0)
-
-        val updateUri: (String) -> Unit = {
-            updateIncidentImageUri(uri = it, id = currentEditIncidentId.value)
-        }
 
         private val previewUseCase =
             Preview
@@ -150,15 +142,6 @@ class IncidentViewModel
             }
         }
 
-        private fun applySorting(
-            incidents: List<Incident>,
-            sortValue: SortValues,
-        ): List<Incident> =
-            when (sortValue) {
-                SortValues.NEWEST -> incidents.sortedBy { it.dateAdded }.reversed()
-                SortValues.OLDEST -> incidents.sortedBy { it.dateAdded }
-            }
-
         suspend fun bindToCamera(
             appContext: Context,
             lifecycleOwner: LifecycleOwner,
@@ -178,12 +161,9 @@ class IncidentViewModel
             }
         }
 
-        fun updateEditIncidentId(id: Int) {
-            currentEditIncidentId.value = id
-        }
-
         @RequiresApi(Build.VERSION_CODES.Q)
         fun capturePicture(
+            id: Int,
             context: Context,
             onNavigateBack: () -> Unit,
         ) {
@@ -208,23 +188,28 @@ class IncidentViewModel
                                         .graphics.BitmapFactory
                                         .decodeFile(tempFile.absolutePath)
                                 if (bitMap == null) {
-                                    _snackbarEvents.send(SnackbarEvent("Error saving Image"))
+                                    _snackbarEvents.send(SnackbarEvent("Error decoding Image"))
+                                    tempFile.delete()
                                     return@launch
                                 }
-                                mediaStoreUtil.saveImage(bitMap, updateUri)
-                                Log.e("INCIDENT VIEW MODEL", currentEditIncidentId.value.toString())
+                                mediaStoreUtil.saveImage(bitMap) { uri: String ->
+                                    updateIncidentImageUri(uri = uri, id = id)
+                                }
+                                Log.e("INCIDENT VIEW MODEL", id.toString())
                                 when (tempFile.delete()) {
                                     true -> {
-                                        Toast.makeText(context, "Image successfully saved", Toast.LENGTH_SHORT).show()
+                                        _snackbarEvents.send(SnackbarEvent("Image successfully saved 🎉"))
                                         onNavigateBack()
                                     }
 
                                     false -> {
-                                        Toast.makeText(context, "Image creation failed!", Toast.LENGTH_LONG).show()
+                                        _snackbarEvents.send(SnackbarEvent("Image creation failed ❌"))
+                                        onNavigateBack()
                                     }
                                 }
                             } catch (e: Exception) {
-                                Toast.makeText(context, "Image creation failed!: ${e.message}", Toast.LENGTH_LONG).show()
+                                Log.e("INCIDENT VIEW MODEL CAPTURE IMAGE", "Failed ${e.message}", e)
+                                _snackbarEvents.send(SnackbarEvent("Image creation failed!: ${e.message}"))
                                 tempFile.delete()
                             }
                         }

@@ -1,5 +1,7 @@
 package com.whoismacy.android.incidentincidence.viewmodel
 
+import com.whoismacy.android.incidentincidence.model.Incident
+
 interface SortFilter {
     val value: String
 }
@@ -28,3 +30,12 @@ enum class FilterPeriodValues(
     PMONTH("Past Month"),
     PYEAR("Past Year"),
 }
+
+fun applySorting(
+    incidents: List<Incident>,
+    sortValue: SortValues,
+): List<Incident> =
+    when (sortValue) {
+        SortValues.NEWEST -> incidents.sortedBy { it.dateAdded }.reversed()
+        SortValues.OLDEST -> incidents.sortedBy { it.dateAdded }
+    }
