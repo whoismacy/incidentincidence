@@ -1,0 +1,7 @@
+name: Incident Incident yaml
+on: [push]
+jobs:
+  IncidentIncident:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Run triggered by a ${{github.event_name}} event."
